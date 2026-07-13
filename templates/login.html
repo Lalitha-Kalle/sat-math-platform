@@ -38,7 +38,7 @@
 
     body {
       font-family: "Inter", system-ui, sans-serif;
-      background: var(--bg);
+      background: linear-gradient(160deg, var(--blue), var(--sun));
       color: var(--ink);
       display: flex;
       align-items: center;
@@ -59,28 +59,22 @@
 
     .logo {
       display: flex;
-      align-items: center;
-      gap: 2px;
-      font-weight: 800;
-      font-size: 24px;
-      letter-spacing: -.6px;
-      color: var(--blue);
+      justify-content: center;
       margin-bottom: 4px;
     }
 
-    .logo .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--sun);
-      margin-left: 3px;
-      margin-bottom: -2px;
+    .logo img {
+      height: 84px;
+      width: auto;
+      max-width: 320px;
+      object-fit: contain;
     }
 
     .tagline {
       font-size: 13px;
       color: var(--ink-soft);
       font-weight: 500;
+      text-align: center;
       margin-bottom: 26px;
     }
 
@@ -150,7 +144,7 @@
 
 <body>
   <div class="card">
-    <div class="logo">SAT<span style="font-style:italic;font-weight:700">ly</span><span class="dot"></span></div>
+    <div class="logo"><img src="https://raw.githubusercontent.com/Lalitha-Kalle/problems/refs/heads/main/logo.png" alt="SATly logo"></div>
     <div class="tagline">Sign in to SAT Math Studio</div>
 
     {% if error %}
