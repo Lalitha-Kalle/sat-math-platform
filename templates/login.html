@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in · SATly</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #1B4FE5;
+      --blue-700: #1740BE;
+      --ink: #0A0F2C;
+      --sun: #FFD43B;
+      --sky: #E8F0FF;
+      --ink-soft: #5A6180;
+      --line: #E3E7F2;
+      --surface: #fff;
+      --bg: #F4F6FB;
+      --no: #DC2B2B;
+      --no-soft: #FDECEC;
+      --r: 14px;
+      --shadow: 0 1px 2px rgba(10, 15, 44, .05), 0 10px 30px rgba(10, 15, 44, .07);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      font-family: "Inter", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 380px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      padding: 34px 32px;
+      margin: 20px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      font-weight: 800;
+      font-size: 24px;
+      letter-spacing: -.6px;
+      color: var(--blue);
+      margin-bottom: 4px;
+    }
+
+    .logo .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--sun);
+      margin-left: 3px;
+      margin-bottom: -2px;
+    }
+
+    .tagline {
+      font-size: 13px;
+      color: var(--ink-soft);
+      font-weight: 500;
+      margin-bottom: 26px;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 6px;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    input {
+      width: 100%;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink);
+      background: var(--sky);
+      border: 1.5px solid #CFDEFB;
+      border-radius: 9px;
+      padding: 11px 13px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(27, 79, 229, .15);
+    }
+
+    .error {
+      background: var(--no-soft);
+      color: var(--no);
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 16px;
+    }
+
+    button {
+      width: 100%;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 9px;
+      padding: 12px;
+      cursor: pointer;
+      border: 1.5px solid var(--blue);
+      background: var(--blue);
+      color: #fff;
+      margin-top: 6px;
+      transition: background .15s;
+    }
+
+    button:hover {
+      background: var(--blue-700);
+      border-color: var(--blue-700);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <div class="logo">SAT<span style="font-style:italic;font-weight:700">ly</span><span class="dot"></span></div>
+    <div class="tagline">Sign in to SAT Math Studio</div>
+
+    {% if error %}
+    <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('auth.login', next=request.args.get('next')) }}">
+      <div class="field">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" autocomplete="username" required autofocus>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+      </div>
+      <button type="submit">Sign in</button>
+    </form>
+  </div>
+</body>
+
+</html>

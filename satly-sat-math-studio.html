@@ -1,0 +1,2728 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SATly · SAT Math Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --blue: #1B4FE5;
+      --blue-700: #1740BE;
+      --ink: #0A0F2C;
+      --sun: #FFD43B;
+      --sky: #E8F0FF;
+      --cream: #FFF8E7;
+      --ink-soft: #5A6180;
+      --ink-faint: #939AB5;
+      --line: #E3E7F2;
+      --line-soft: #EFF2F8;
+      --surface: #fff;
+      --bg: #F4F6FB;
+      --ok: #12996B;
+      --ok-soft: #E4F6EF;
+      --no: #DC2B2B;
+      --no-soft: #FDECEC;
+      --r: 12px;
+      --shadow: 0 1px 2px rgba(10, 15, 44, .05), 0 10px 30px rgba(10, 15, 44, .07);
+      font-synthesis: none;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      font-family: "Inter", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden
+    }
+
+    .app {
+      height: 100vh;
+      display: flex;
+      flex-direction: column
+    }
+
+    .serif {
+      font-family: "Source Serif 4", Georgia, serif
+    }
+
+    /* ---------- TOP BAR ---------- */
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 16px;
+      height: 56px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+      z-index: 20
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      font-weight: 800;
+      font-size: 21px;
+      letter-spacing: -.6px;
+      color: var(--blue);
+      position: relative;
+      padding-right: 6px
+    }
+
+    .logo .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--sun);
+      margin-left: 3px;
+      margin-bottom: -2px
+    }
+
+    .logo .swoosh {
+      position: absolute;
+      left: 0;
+      right: 8px;
+      bottom: -3px;
+      height: 6px
+    }
+
+    .brand-logo {
+      height: 200px;
+      width: auto;
+      max-width: 140px;
+      object-fit: contain;
+      flex-shrink: 0;
+      display: block
+    }
+
+    .tagline {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--sun);
+      letter-spacing: .2px;
+      padding-left: 10px;
+      margin-left: 2px;
+      border-left: 1px solid var(--line)
+    }
+
+    .tagline b {
+      color: var(--blue)
+    }
+
+    .modes {
+      display: flex;
+      background: var(--line-soft);
+      border-radius: 10px;
+      padding: 3px;
+      gap: 2px;
+      margin-left: 8px
+    }
+
+    .modes button {
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      background: transparent;
+      color: var(--ink-soft);
+      padding: 7px 16px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: all .15s
+    }
+
+    .modes button.active {
+      background: var(--surface);
+      color: var(--blue);
+      box-shadow: 0 1px 3px rgba(10, 15, 44, .13)
+    }
+
+    .modes button:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 1px
+    }
+
+    .chapsel {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+      flex: 1;
+      max-width: 400px
+    }
+
+    .chapsel label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      padding-left: 2px
+    }
+
+    .selw {
+      position: relative
+    }
+
+    select {
+      appearance: none;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--ink);
+      background: var(--sky);
+      border: 1.5px solid #CFDEFB;
+      border-radius: 9px;
+      padding: 7px 30px 7px 11px;
+      cursor: pointer;
+      width: 100%;
+      transition: all .15s
+    }
+
+    select:hover {
+      border-color: #A9C6F8
+    }
+
+    select:focus-visible {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(27, 79, 229, .15)
+    }
+
+    .selw::after {
+      content: "";
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      width: 7px;
+      height: 7px;
+      border-right: 2px solid var(--blue);
+      border-bottom: 2px solid var(--blue);
+      transform: translateY(-70%) rotate(45deg);
+      pointer-events: none
+    }
+
+    .spacer {
+      flex: 1
+    }
+
+    .streak {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--cream);
+      border: 1px solid #F5E4B0;
+      border-radius: 999px;
+      padding: 6px 13px 6px 10px;
+      font-weight: 700;
+      font-size: 13px;
+      color: #8A6400;
+      font-variant-numeric: tabular-nums
+    }
+
+    .streak.pulse {
+      animation: pp .4s ease
+    }
+
+    @keyframes pp {
+      0% {
+        transform: scale(1)
+      }
+
+      42% {
+        transform: scale(1.22)
+      }
+
+      100% {
+        transform: scale(1)
+      }
+    }
+
+    .pts {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--sky);
+      border: 1px solid #CFDEFB;
+      border-radius: 999px;
+      padding: 6px 13px 6px 10px;
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--blue);
+      font-variant-numeric: tabular-nums
+    }
+
+    /* ---------- STAGE ---------- */
+    .stage {
+      flex: 1;
+      display: flex;
+      min-height: 0
+    }
+
+    /* ===== TEACH MODE ===== */
+    .teach {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+      padding: 14px;
+      gap: 14px
+    }
+
+    .pane {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden
+    }
+
+    .deck {
+      flex: 1 1 58%;
+      min-width: 0
+    }
+
+    .wb {
+      flex: 1 1 42%;
+      min-width: 0
+    }
+
+    .phead {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 13px;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+      flex-wrap: wrap;
+      min-height: 50px
+    }
+
+    .ptitle {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-right: auto
+    }
+
+    .ptitle svg {
+      color: var(--blue);
+      flex-shrink: 0
+    }
+
+    .tb {
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      border: 1.5px solid var(--line);
+      background: var(--surface);
+      color: var(--ink-soft);
+      padding: 7px 11px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all .15s;
+      white-space: nowrap
+    }
+
+    .tb:hover {
+      border-color: #C6CDE0;
+      color: var(--ink)
+    }
+
+    .tb.active {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue)
+    }
+
+    .tb.sun.active {
+      background: var(--sun);
+      color: var(--ink);
+      border-color: var(--sun)
+    }
+
+    .tb:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 1px
+    }
+
+    .sw {
+      width: 21px;
+      height: 21px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      cursor: pointer;
+      box-shadow: 0 0 0 1.5px var(--line);
+      transition: transform .12s
+    }
+
+    .sw:hover {
+      transform: scale(1.13)
+    }
+
+    .sw.on {
+      box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--ink)
+    }
+
+    .sep {
+      width: 1px;
+      height: 20px;
+      background: var(--line)
+    }
+
+    .rng {
+      width: 66px;
+      accent-color: var(--blue);
+      cursor: pointer
+    }
+
+    .slidebox {
+      flex: 1;
+      position: relative;
+      min-height: 0;
+      background: #0B1020;
+      overflow: hidden
+    }
+
+    .slideframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block
+    }
+
+    #slidePen {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+      cursor: default
+    }
+
+    #slidePen.armed {
+      cursor: crosshair
+    }
+
+    .noembed {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 30px;
+      text-align: center;
+      background: linear-gradient(160deg, #1B4FE5, #0A0F2C)
+    }
+
+    .noembed h3 {
+      color: #fff;
+      font-size: 17px;
+      font-weight: 700
+    }
+
+    .noembed p {
+      color: #B9C7F0;
+      font-size: 13px;
+      max-width: 400px;
+      line-height: 1.55
+    }
+
+    .urlrow {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      max-width: 440px
+    }
+
+    .urlrow input {
+      flex: 1;
+      font-family: inherit;
+      font-size: 13px;
+      padding: 10px 12px;
+      border-radius: 9px;
+      border: 1.5px solid rgba(255, 255, 255, .25);
+      background: rgba(255, 255, 255, .1);
+      color: #fff
+    }
+
+    .urlrow input::placeholder {
+      color: #8FA3DC
+    }
+
+    .urlrow input:focus {
+      outline: none;
+      border-color: var(--sun)
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 9px;
+      padding: 10px 16px;
+      cursor: pointer;
+      border: 1.5px solid var(--blue);
+      background: var(--blue);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all .15s;
+      white-space: nowrap
+    }
+
+    .btn:hover {
+      background: var(--blue-700);
+      border-color: var(--blue-700)
+    }
+
+    .btn.sun {
+      background: var(--sun);
+      border-color: var(--sun);
+      color: var(--ink)
+    }
+
+    .btn.sun:hover {
+      background: #F0C520;
+      border-color: #F0C520
+    }
+
+    .btn.ghost {
+      background: transparent;
+      border-color: var(--line);
+      color: var(--ink-soft)
+    }
+
+    .btn.ghost:hover {
+      border-color: #C6CDE0;
+      color: var(--ink)
+    }
+
+    .btn:disabled {
+      opacity: .45;
+      cursor: default
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 2px
+    }
+
+    .demoslide {
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      padding: 40px 46px;
+      display: flex;
+      flex-direction: column;
+      overflow: auto
+    }
+
+    .demoslide .kicker {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 10px
+    }
+
+    .demoslide h2 {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -.6px;
+      margin-bottom: 6px;
+      line-height: 1.15
+    }
+
+    .demoslide h2 em {
+      font-style: normal;
+      color: var(--blue)
+    }
+
+    .demoslide .sub {
+      font-size: 14px;
+      color: var(--ink-soft);
+      margin-bottom: 22px;
+      font-weight: 500
+    }
+
+    .demoslide ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 11px
+    }
+
+    .demoslide li {
+      display: flex;
+      gap: 11px;
+      align-items: flex-start;
+      font-size: 15.5px;
+      line-height: 1.5;
+      font-weight: 500
+    }
+
+    .demoslide li .b {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--sky);
+      color: var(--blue);
+      font-size: 11.5px;
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      margin-top: 2px
+    }
+
+    .demoslide .note {
+      margin-top: auto;
+      padding-top: 18px;
+      font-size: 12px;
+      color: var(--ink-faint);
+      border-top: 1px solid var(--line-soft)
+    }
+
+    .snav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 13px;
+      border-top: 1px solid var(--line);
+      flex-shrink: 0;
+      background: var(--surface)
+    }
+
+    .snav .cnt {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-soft);
+      font-variant-numeric: tabular-nums;
+      margin-left: auto
+    }
+
+    .board-wrap {
+      flex: 1;
+      position: relative;
+      min-height: 0;
+      background: #FCFDFF;
+      overflow: hidden
+    }
+
+    .board-wrap.grid {
+      background-image: linear-gradient(#DFE8F7 1px, transparent 1px), linear-gradient(90deg, #DFE8F7 1px, transparent 1px);
+      background-size: 26px 26px
+    }
+
+    #board {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      touch-action: none
+    }
+
+    .whint {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--ink-faint);
+      font-size: 13px;
+      pointer-events: none;
+      text-align: center;
+      font-weight: 500;
+      transition: opacity .4s
+    }
+
+    .whint span {
+      display: block;
+      font-size: 11px;
+      margin-top: 4px;
+      color: #B7BDD2
+    }
+
+    /* ===== QUIZ (BLUEBOOK) ===== */
+    .quiz {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      background: #fff
+    }
+
+    .bb-top {
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      height: 60px;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+      gap: 14px
+    }
+
+    .bb-left {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex: 1;
+      min-width: 0
+    }
+
+    .bb-back {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit
+    }
+
+    .bb-back:hover {
+      color: var(--blue)
+    }
+
+    .bb-dirs {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    .bb-mid {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      flex-shrink: 0
+    }
+
+    .bb-timer {
+      font-size: 20px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: .5px
+    }
+
+    .bb-timer.hidden {
+      visibility: hidden
+    }
+
+    .bb-trow {
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .bb-pause {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 1.5px solid var(--ink);
+      background: none;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-size: 9px
+    }
+
+    .bb-hide {
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1.5px solid var(--ink);
+      border-radius: 999px;
+      background: none;
+      padding: 4px 13px;
+      cursor: pointer
+    }
+
+    .bb-hide:hover {
+      background: var(--line-soft)
+    }
+
+    .bb-right {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      flex: 1;
+      justify-content: flex-end
+    }
+
+    .bb-tool {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink);
+      padding: 4px 2px;
+      border-radius: 6px
+    }
+
+    .bb-tool:hover {
+      color: var(--blue)
+    }
+
+    .bb-tool.on {
+      color: var(--blue)
+    }
+
+    .bb-tool svg {
+      stroke-width: 1.7
+    }
+
+    .lvlchip {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: .4px
+    }
+
+    .lvlchip.E {
+      background: var(--ok-soft);
+      color: var(--ok)
+    }
+
+    .lvlchip.M {
+      background: var(--cream);
+      color: #8A6400
+    }
+
+    .lvlchip.H {
+      background: var(--no-soft);
+      color: var(--no)
+    }
+
+    .modechip {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--sky);
+      color: var(--blue);
+      letter-spacing: .3px
+    }
+
+    /* annotation layer over the question */
+    .bb-wrap {
+      flex: 1;
+      position: relative;
+      min-height: 0;
+      display: flex
+    }
+
+    #qInk {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 5;
+      touch-action: none;
+      pointer-events: none
+    }
+
+    #qInk.armed {
+      pointer-events: auto;
+      cursor: crosshair
+    }
+
+    .inkbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 8px;
+      border-left: 1px solid var(--line);
+      margin-left: 4px
+    }
+
+    .inkbar .sw {
+      width: 19px;
+      height: 19px
+    }
+
+    .hlchip {
+      background: var(--sun) !important;
+      color: var(--ink) !important;
+      border-color: var(--sun) !important
+    }
+
+    .bb-body {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      justify-content: center;
+      padding: 26px 20px 20px
+    }
+
+    .bb-body::-webkit-scrollbar {
+      width: 12px
+    }
+
+    .bb-body::-webkit-scrollbar-thumb {
+      background: #C8CEE0;
+      border-radius: 9px;
+      border: 3px solid #fff
+    }
+
+    .qcard {
+      width: 100%;
+      max-width: 720px
+    }
+
+    .qhead {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--line-soft);
+      border-radius: 6px;
+      padding: 8px 12px 8px 0;
+      margin-bottom: 22px
+    }
+
+    .qnum {
+      width: 44px;
+      height: 40px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 18px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+      border-radius: 6px 0 0 6px;
+      flex-shrink: 0
+    }
+
+    .mark {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink)
+    }
+
+    .mark:hover {
+      color: var(--blue)
+    }
+
+    .mark.on {
+      color: var(--blue)
+    }
+
+    .mark.on svg {
+      fill: var(--blue)
+    }
+
+    .qhead .r {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .abc {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1.5px solid var(--ink);
+      background: #fff;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+      position: relative
+    }
+
+    .abc.on {
+      background: var(--ink);
+      color: #fff
+    }
+
+    .abc::after {
+      content: "";
+      position: absolute;
+      left: 5px;
+      right: 5px;
+      top: 50%;
+      height: 1.5px;
+      background: currentColor;
+      transform: scaleX(0);
+      transition: transform .15s
+    }
+
+    .abc.on::after {
+      transform: scaleX(1)
+    }
+
+    .stem {
+      font-family: "Source Serif 4", Georgia, serif;
+      font-size: 19px;
+      line-height: 1.65;
+      margin-bottom: 26px
+    }
+
+    .stem .v {
+      font-style: italic
+    }
+
+    .opts {
+      display: flex;
+      flex-direction: column;
+      gap: 12px
+    }
+
+    .orow {
+      display: flex;
+      align-items: center;
+      gap: 14px
+    }
+
+    .opt {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      text-align: left;
+      font-family: "Source Serif 4", Georgia, serif;
+      font-size: 18px;
+      background: #fff;
+      border: 1.5px solid #C9CFDE;
+      border-radius: 9px;
+      padding: 15px 17px;
+      cursor: pointer;
+      transition: all .13s;
+      min-height: 58px
+    }
+
+    .opt:hover:not(.dead):not(.lock) {
+      border-color: var(--ink);
+      box-shadow: 0 0 0 1px var(--ink)
+    }
+
+    .opt .k {
+      width: 29px;
+      height: 29px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      border: 1.5px solid var(--ink);
+      font-family: "Inter", sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+      transition: all .13s
+    }
+
+    .opt.sel {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 1.5px var(--blue);
+      background: #F7FAFF
+    }
+
+    .opt.sel .k {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff
+    }
+
+    .opt.right {
+      border-color: var(--ok);
+      box-shadow: 0 0 0 1.5px var(--ok);
+      background: var(--ok-soft)
+    }
+
+    .opt.right .k {
+      background: var(--ok);
+      border-color: var(--ok);
+      color: #fff
+    }
+
+    .opt.wrong {
+      border-color: var(--no);
+      box-shadow: 0 0 0 1.5px var(--no);
+      background: var(--no-soft)
+    }
+
+    .opt.wrong .k {
+      background: var(--no);
+      border-color: var(--no);
+      color: #fff
+    }
+
+    .opt.dead {
+      opacity: .42
+    }
+
+    .opt.dead .txt {
+      text-decoration: line-through
+    }
+
+    .opt.lock {
+      cursor: default
+    }
+
+    .opt .mk {
+      margin-left: auto;
+      font-size: 17px;
+      font-weight: 700
+    }
+
+    .opt:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 2px
+    }
+
+    .elim {
+      display: none
+    }
+
+    .elim.show {
+      display: block
+    }
+
+    .expl {
+      margin-top: 22px;
+      border: 1.5px solid var(--line);
+      border-left: 4px solid var(--blue);
+      border-radius: 0 10px 10px 0;
+      padding: 16px 18px;
+      background: #FBFCFF;
+      animation: sl .28s ease
+    }
+
+    @keyframes sl {
+      from {
+        opacity: 0;
+        transform: translateY(7px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .expl h4 {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 8px
+    }
+
+    .expl p {
+      font-family: "Source Serif 4", serif;
+      font-size: 16px;
+      line-height: 1.6
+    }
+
+    .expl .ansline {
+      margin-top: 10px;
+      font-family: "Inter", sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ok)
+    }
+
+    .bb-bot {
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      height: 62px;
+      border-top: 1px solid var(--line);
+      flex-shrink: 0;
+      background: #fff;
+      gap: 12px;
+      position: relative
+    }
+
+    .navpop {
+      position: absolute;
+      left: 20px;
+      bottom: 70px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: 0 12px 40px rgba(10, 15, 44, .18);
+      padding: 14px;
+      width: 290px;
+      display: none;
+      z-index: 30
+    }
+
+    .navpop.show {
+      display: block
+    }
+
+    .navpop .t {
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 12px
+    }
+
+    .navgrid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px
+    }
+
+    .ng {
+      height: 38px;
+      border-radius: 7px;
+      border: 1.5px dashed #B9C0D4;
+      background: #fff;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      cursor: pointer;
+      position: relative
+    }
+
+    .ng:hover {
+      border-color: var(--blue)
+    }
+
+    .ng.ans {
+      background: var(--blue);
+      border: 1.5px solid var(--blue);
+      color: #fff
+    }
+
+    .ng.cur {
+      outline: 2px solid var(--ink);
+      outline-offset: 2px
+    }
+
+    .ng.flag::before {
+      content: "⚑";
+      position: absolute;
+      top: -7px;
+      right: -4px;
+      font-size: 11px;
+      color: var(--no)
+    }
+
+    .ng.ok {
+      background: var(--ok);
+      border-color: var(--ok);
+      color: #fff
+    }
+
+    .ng.bad {
+      background: var(--no);
+      border-color: var(--no);
+      color: #fff
+    }
+
+    .qpick {
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      background: var(--ink);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 10px 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .qpick:hover {
+      background: #161d47
+    }
+
+    .bb-bot .rr {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 9px
+    }
+
+    .pillbtn {
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 10px 22px;
+      cursor: pointer;
+      border: 1.5px solid var(--line);
+      background: #fff;
+      color: var(--ink)
+    }
+
+    .pillbtn:hover {
+      border-color: #B9C0D4
+    }
+
+    .pillbtn.blue {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff
+    }
+
+    .pillbtn.blue:hover {
+      background: var(--blue-700)
+    }
+
+    .pillbtn:disabled {
+      opacity: .4;
+      cursor: default
+    }
+
+    /* level / mode picker */
+    .setup {
+      flex: 1;
+      display: grid;
+      place-items: center;
+      padding: 30px;
+      overflow: auto
+    }
+
+    .setupcard {
+      width: 100%;
+      max-width: 660px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 32px 34px
+    }
+
+    .setupcard .kick {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 7px
+    }
+
+    .setupcard h2 {
+      font-size: 25px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+      margin-bottom: 6px
+    }
+
+    .setupcard .s {
+      font-size: 14px;
+      color: var(--ink-soft);
+      margin-bottom: 26px;
+      font-weight: 500
+    }
+
+    .grp {
+      margin-bottom: 24px
+    }
+
+    .grp .lb {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 10px
+    }
+
+    .lvls {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 11px
+    }
+
+    .lv {
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      padding: 15px;
+      cursor: pointer;
+      background: #fff;
+      text-align: left;
+      font-family: inherit;
+      transition: all .15s
+    }
+
+    .lv:hover {
+      border-color: #B9C0D4
+    }
+
+    .lv.on {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 1.5px var(--blue);
+      background: #F7FAFF
+    }
+
+    .lv .nm {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 7px
+    }
+
+    .lv .ds {
+      font-size: 12px;
+      color: var(--ink-soft);
+      font-weight: 500;
+      line-height: 1.4
+    }
+
+    .lv .bar {
+      display: flex;
+      gap: 3px;
+      margin-top: 9px
+    }
+
+    .lv .bar i {
+      height: 4px;
+      flex: 1;
+      border-radius: 3px;
+      background: var(--line)
+    }
+
+    .lv[data-l="E"] .bar i:nth-child(1) {
+      background: var(--ok)
+    }
+
+    .lv[data-l="M"] .bar i:nth-child(-n+2) {
+      background: var(--sun)
+    }
+
+    .lv[data-l="H"] .bar i {
+      background: var(--no)
+    }
+
+    .two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 11px
+    }
+
+    .mo {
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      padding: 15px;
+      cursor: pointer;
+      background: #fff;
+      text-align: left;
+      font-family: inherit;
+      transition: all .15s
+    }
+
+    .mo:hover {
+      border-color: #B9C0D4
+    }
+
+    .mo.on {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 1.5px var(--blue);
+      background: #F7FAFF
+    }
+
+    .mo .nm {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 3px
+    }
+
+    .mo .ds {
+      font-size: 12px;
+      color: var(--ink-soft);
+      font-weight: 500;
+      line-height: 1.4
+    }
+
+    /* results */
+    .res {
+      flex: 1;
+      display: grid;
+      place-items: center;
+      padding: 30px;
+      overflow: auto
+    }
+
+    .rescard {
+      width: 100%;
+      max-width: 660px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 34px;
+      text-align: center
+    }
+
+    .score {
+      font-size: 56px;
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1;
+      margin-bottom: 6px
+    }
+
+    .score .of {
+      font-size: 24px;
+      color: var(--ink-faint);
+      font-weight: 700
+    }
+
+    .resmsg {
+      font-size: 15px;
+      color: var(--ink-soft);
+      font-weight: 500;
+      margin-bottom: 24px
+    }
+
+    .bars {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 26px;
+      flex-wrap: wrap
+    }
+
+    .bars i {
+      width: 34px;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--line)
+    }
+
+    .bars i.ok {
+      background: var(--ok)
+    }
+
+    .bars i.bad {
+      background: var(--no)
+    }
+
+    .resbtns {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap
+    }
+
+    /* modals */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 15, 44, .5);
+      z-index: 70;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px
+    }
+
+    .modal.show {
+      display: flex
+    }
+
+    .mbox {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 24px 70px rgba(10, 15, 44, .35);
+      max-width: 640px;
+      width: 100%;
+      max-height: 86vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden
+    }
+
+    .mhead {
+      display: flex;
+      align-items: center;
+      padding: 15px 18px;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0
+    }
+
+    .mhead h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-right: auto
+    }
+
+    .x {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: none;
+      background: var(--line-soft);
+      cursor: pointer;
+      font-size: 15px;
+      color: var(--ink-soft);
+      display: grid;
+      place-items: center
+    }
+
+    .x:hover {
+      background: #E3E7F2
+    }
+
+    .mbody {
+      padding: 18px;
+      overflow-y: auto
+    }
+
+    #desmos {
+      width: 100%;
+      height: 420px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--line)
+    }
+
+    .calcfallback {
+      display: none
+    }
+
+    .calcfallback.show {
+      display: block
+    }
+
+    .cdisp {
+      background: var(--ink);
+      color: #fff;
+      border-radius: 10px;
+      padding: 14px 16px;
+      text-align: right;
+      font-size: 26px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      margin-bottom: 11px;
+      overflow: hidden;
+      min-height: 60px;
+      word-break: break-all
+    }
+
+    .ckeys {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 7px
+    }
+
+    .ck {
+      height: 46px;
+      border-radius: 9px;
+      border: 1.5px solid var(--line);
+      background: #fff;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer
+    }
+
+    .ck:hover {
+      background: var(--line-soft)
+    }
+
+    .ck.op {
+      background: var(--sky);
+      color: var(--blue);
+      border-color: #CFDEFB
+    }
+
+    .ck.eq {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue)
+    }
+
+    .ck.fn {
+      font-size: 13px;
+      color: var(--ink-soft)
+    }
+
+    .refgrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px
+    }
+
+    .refc {
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      padding: 14px
+    }
+
+    .refc h5 {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 9px
+    }
+
+    .refc .f {
+      font-family: "Source Serif 4", serif;
+      font-size: 15px;
+      padding: 4px 0;
+      border-bottom: 1px solid var(--line-soft)
+    }
+
+    .refc .f:last-child {
+      border: none
+    }
+
+    .reffig {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 6px 0
+    }
+
+    .reffig svg {
+      flex-shrink: 0
+    }
+
+    .reffig span {
+      font-family: "Source Serif 4", serif;
+      font-size: 14px;
+      line-height: 1.4
+    }
+
+    /* confetti + toast */
+    #fx {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 80
+    }
+
+    #toasts {
+      position: fixed;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 78;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+      pointer-events: none
+    }
+
+    .toast {
+      background: var(--ink);
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 11px 20px;
+      border-radius: 999px;
+      box-shadow: 0 10px 26px rgba(10, 15, 44, .3);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      animation: ti .28s ease
+    }
+
+    @keyframes ti {
+      from {
+        opacity: 0;
+        transform: translateY(-11px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .toast.out {
+      animation: to .3s ease forwards
+    }
+
+    @keyframes to {
+      to {
+        opacity: 0;
+        transform: translateY(-9px)
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      * {
+        animation: none !important
+      }
+    }
+
+    @media (max-width:980px) {
+      body {
+        overflow: auto
+      }
+
+      .app {
+        height: auto;
+        min-height: 100vh
+      }
+
+      .teach {
+        flex-direction: column;
+        padding: 12px
+      }
+
+      .deck,
+      .wb {
+        flex: none
+      }
+
+      .slidebox {
+        min-height: 340px
+      }
+
+      .board-wrap {
+        min-height: 340px
+      }
+
+      .tagline {
+        display: none
+      }
+
+      .bb-right {
+        gap: 14px
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- ================= TOP BAR ================= -->
+    <header class="topbar">
+      <!-- <div class="logo">
+        <span>SAT<em style="font-style:italic;font-weight:700">ly</em></span><span class="dot"></span>
+        <svg class="swoosh" viewBox="0 0 100 8" preserveAspectRatio="none">
+          <path d="M2 6 Q40 -1 98 3" stroke="#FFD43B" stroke-width="3" fill="none" stroke-linecap="round" />
+        </svg>
+      </div>
+      <div class="tagline"><b>Built to</b> outscore.</div> -->
+
+      <img class="brand-logo" src="https://raw.githubusercontent.com/Lalitha-Kalle/problems/refs/heads/main/logo.png" alt="SATly logo">
+      <div class="modes" role="group" aria-label="Mode">
+        <button id="mTeach" class="active"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <path d="M8 21h8M12 17v4" />
+          </svg>Teach</button>
+        <button id="mQuiz"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path d="M9 11l3 3L22 4" />
+            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+          </svg>Quiz</button>
+      </div>
+
+      <div class="chapsel">
+        <label for="selChap">Chapter</label>
+        <div class="selw"><select id="selChap"></select></div>
+      </div>
+
+      <div class="spacer"></div>
+      <div class="pts" id="ptsBox" title="Points this session">◆ <span id="ptsN">0</span></div>
+      <div class="streak" id="strBox" title="Correct streak">🔥 <span id="strN">0</span></div>
+    </header>
+
+    <div class="stage">
+      <!-- ================= TEACH MODE ================= -->
+      <div class="teach" id="teachView">
+        <!-- deck -->
+        <section class="pane deck">
+          <div class="phead">
+            <div class="ptitle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <path d="M8 21h8M12 17v4" />
+              </svg><span id="deckName">Presentation</span></div>
+            <button class="tb sun" id="sPen"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.2">
+                <path d="M12 19l7-7 3 3-7 7-3-3z" />
+                <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+              </svg>Pen</button>
+            <div class="toolgrp" id="sSwatches" style="display:flex;gap:5px"></div>
+            <button class="tb" id="sUndo">Undo</button>
+            <button class="tb" id="sClear">Clear</button>
+            <div class="sep"></div>
+            <button class="tb" id="sLink"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.2">
+                <path d="M10 13a5 5 0 007.5.5l3-3a5 5 0 00-7-7l-1.7 1.7" />
+                <path d="M14 11a5 5 0 00-7.5-.5l-3 3a5 5 0 007 7l1.7-1.7" />
+              </svg>Deck link</button>
+          </div>
+          <div class="slidebox" id="slideBox">
+            <iframe class="slideframe" id="slideFrame" style="display:none" title="Chapter presentation"
+              allowfullscreen></iframe>
+            <div class="demoslide" id="demoSlide"></div>
+            <canvas id="slidePen"></canvas>
+            <div class="noembed" id="noEmbed" style="display:none">
+              <h3>Link this chapter's Google Slides deck</h3>
+              <p>In the live product this is uploaded once in the backend and auto-loads with the chapter. For the
+                prototype, paste a Google Slides <b>publish-to-web / embed</b> URL.</p>
+              <div class="urlrow">
+                <input id="urlIn" placeholder="https://docs.google.com/presentation/d/…/embed">
+                <button class="btn sun" id="urlGo">Load deck</button>
+              </div>
+              <button class="btn ghost" id="urlCancel" style="color:#B9C7F0;border-color:rgba(255,255,255,.25)">Use the
+                built-in sample slides</button>
+            </div>
+          </div>
+          <div class="snav">
+            <button class="tb" id="sPrev">‹ Prev</button>
+            <button class="tb" id="sNext">Next ›</button>
+            <button class="tb" id="sFull">Present full screen</button>
+            <span class="cnt" id="sCount">—</span>
+          </div>
+        </section>
+
+        <!-- whiteboard -->
+        <section class="pane wb">
+          <div class="phead">
+            <div class="ptitle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
+                <path d="M3 3h18v13H3z" />
+                <path d="M8 21l4-5 4 5" />
+              </svg>Whiteboard</div>
+            <div class="toolgrp" id="wSwatches" style="display:flex;gap:5px"></div>
+            <div class="sep"></div>
+            <input type="range" class="rng" id="wSize" min="1" max="16" value="3" aria-label="Pen size">
+            <div class="sep"></div>
+            <button class="tb active" id="wPen">Pen</button>
+            <button class="tb" id="wErase">Eraser</button>
+            <button class="tb" id="wGrid">Squared</button>
+            <button class="tb" id="wUndo">Undo</button>
+            <button class="tb" id="wClear">Clear</button>
+            <button class="tb" id="wSave" style="border-color:var(--blue);color:var(--blue)">Save PNG</button>
+          </div>
+          <div class="board-wrap grid" id="boardWrap">
+            <canvas id="board"></canvas>
+            <div class="whint" id="wHint">Work it out here<span>squared paper · pen · eraser · undo</span></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ================= QUIZ MODE ================= -->
+      <div class="quiz" id="quizView" style="display:none">
+        <!-- setup -->
+        <div class="setup" id="setupView">
+          <div class="setupcard">
+            <div class="kick">Quiz Mode</div>
+            <h2 id="setupChap">Choose your level</h2>
+            <div class="s">10 questions per level, in the Bluebook test interface.</div>
+            <div class="grp">
+              <div class="lb">Difficulty</div>
+              <div class="lvls" id="lvlPick">
+                <button class="lv on" data-l="E">
+                  <div class="nm">Easy</div>
+                  <div class="ds">Core skills and direct application.</div>
+                  <div class="bar"><i></i><i></i><i></i></div>
+                </button>
+                <button class="lv" data-l="M">
+                  <div class="nm">Medium</div>
+                  <div class="ds">Multi-step reasoning, typical of test day.</div>
+                  <div class="bar"><i></i><i></i><i></i></div>
+                </button>
+                <button class="lv" data-l="H">
+                  <div class="nm">Hard</div>
+                  <div class="ds">The stretch questions that separate scores.</div>
+                  <div class="bar"><i></i><i></i><i></i></div>
+                </button>
+              </div>
+            </div>
+            <div class="grp">
+              <div class="lb">How it runs</div>
+              <div class="two" id="modePick">
+                <button class="mo on" data-m="practice">
+                  <div class="nm">Practice</div>
+                  <div class="ds">Instant feedback and an explanation after every question. Best for teaching.</div>
+                </button>
+                <button class="mo" data-m="test">
+                  <div class="nm">Test</div>
+                  <div class="ds">Timed, no feedback until the end — then a full score review.</div>
+                </button>
+              </div>
+            </div>
+            <button class="btn" id="startQuiz" style="width:100%;justify-content:center;padding:14px">Start · <span
+                id="startLbl">Easy · Practice</span></button>
+          </div>
+        </div>
+
+        <!-- runner -->
+        <div style="flex:1;display:none;flex-direction:column;min-height:0" id="runView">
+          <div class="bb-top">
+            <div class="bb-left">
+              <button class="bb-back" id="qBack"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.4">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg> Go back</button>
+              <div class="bb-dirs">Directions <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.4">
+                  <path d="M6 9l6 6 6-6" />
+                </svg></div>
+              <span class="lvlchip E" id="lvlChip">Easy</span>
+              <span class="modechip" id="modeChip">Practice</span>
+            </div>
+            <div class="bb-mid">
+              <div class="bb-timer" id="timer">00:00</div>
+              <div class="bb-trow">
+                <button class="bb-pause" id="tPause" aria-label="Pause timer">❚❚</button>
+                <button class="bb-hide" id="tHide">Hide</button>
+              </div>
+            </div>
+            <div class="bb-right">
+              <button class="bb-tool" id="tPen"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor">
+                  <path d="M12 19l7-7 3 3-7 7-3-3z" />
+                  <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+                  <path d="M2 2l7.586 7.586" />
+                </svg>Pen</button>
+              <button class="bb-tool" id="tHigh"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor">
+                  <path d="M15 3l6 6-9 9H6v-6z" />
+                  <path d="M3 21h18" />
+                </svg>Highlight</button>
+              <div class="inkbar" id="inkBar" style="display:none">
+                <div style="display:flex;gap:5px" id="inkSw"></div>
+                <button class="tb" id="inkUndo" style="padding:5px 9px;font-size:11.5px">Undo</button>
+                <button class="tb" id="inkClear" style="padding:5px 9px;font-size:11.5px">Clear</button>
+              </div>
+              <button class="bb-tool" id="tCalc"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor">
+                  <rect x="4" y="2" width="16" height="20" rx="2" />
+                  <path d="M8 6h8M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 19h8" />
+                </svg>Calculator</button>
+              <button class="bb-tool" id="tRef"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor">
+                  <path d="M14 3v5h5" />
+                  <path d="M7 3h8l5 5v11a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z" />
+                </svg>Reference</button>
+              <button class="bb-tool" id="tElim"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor">
+                  <path d="M5 12h14" />
+                  <circle cx="12" cy="12" r="9" />
+                </svg>Eliminator</button>
+            </div>
+          </div>
+
+          <div class="bb-wrap" id="bbWrap">
+            <div class="bb-body">
+              <div class="qcard" id="qCard"></div>
+            </div>
+            <canvas id="qInk"></canvas>
+          </div>
+
+          <div class="bb-bot">
+            <div class="navpop" id="navPop">
+              <div class="t" id="navTitle">Chapter · Level</div>
+              <div class="navgrid" id="navGrid"></div>
+            </div>
+            <button class="qpick" id="qPick">— <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.6">
+                <path d="M6 15l6-6 6 6" />
+              </svg></button>
+            <div class="rr">
+              <button class="pillbtn" id="qPrev">Previous</button>
+              <button class="pillbtn blue" id="qNext">Next</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- results -->
+        <div class="res" id="resView" style="display:none">
+          <div class="rescard">
+            <div class="kick"
+              style="font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--blue);margin-bottom:10px"
+              id="resKick">Results</div>
+            <div class="score"><span id="scoreN">0</span><span class="of">/10</span></div>
+            <div class="resmsg" id="resMsg"></div>
+            <div class="bars" id="resBars"></div>
+            <div class="resbtns">
+              <button class="btn" id="reviewBtn">Review answers</button>
+              <button class="btn ghost" id="retryBtn">Try again</button>
+              <button class="btn ghost" id="backBtn">Pick another level</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- calculator modal -->
+  <div class="modal" id="calcModal">
+    <div class="mbox" style="max-width:700px">
+      <div class="mhead">
+        <h3>Calculator</h3><button class="x" id="calcX">✕</button>
+      </div>
+      <div class="mbody">
+        <div id="desmos"></div>
+        <div class="calcfallback" id="calcFB">
+          <div class="cdisp" id="cd">0</div>
+          <div class="ckeys" id="ckeys"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- reference modal -->
+  <div class="modal" id="refModal">
+    <div class="mbox">
+      <div class="mhead">
+        <h3>Reference Sheet</h3><button class="x" id="refX">✕</button>
+      </div>
+      <div class="mbody">
+        <div class="refgrid">
+          <div class="refc">
+            <h5>Circle</h5>
+            <div class="reffig"><svg width="46" height="46" viewBox="0 0 46 46">
+                <circle cx="23" cy="23" r="17" fill="#E8F0FF" stroke="#0A0F2C" stroke-width="1.6" />
+                <line x1="23" y1="23" x2="40" y2="23" stroke="#1B4FE5" stroke-width="1.6" /><text x="29" y="20"
+                  font-size="9" fill="#1B4FE5" font-family="serif" font-style="italic">r</text>
+              </svg><span><i>A</i> = π<i>r</i>²<br><i>C</i> = 2π<i>r</i></span></div>
+          </div>
+          <div class="refc">
+            <h5>Rectangle</h5>
+            <div class="reffig"><svg width="56" height="46" viewBox="0 0 56 46">
+                <rect x="6" y="12" width="44" height="24" fill="#E8F0FF" stroke="#0A0F2C" stroke-width="1.6" /><text
+                  x="26" y="9" font-size="9" fill="#1B4FE5" font-family="serif" font-style="italic">ℓ</text><text x="0"
+                  y="27" font-size="9" fill="#1B4FE5" font-family="serif" font-style="italic">w</text>
+              </svg><span><i>A</i> = ℓ<i>w</i></span></div>
+          </div>
+          <div class="refc">
+            <h5>Triangle</h5>
+            <div class="reffig"><svg width="56" height="46" viewBox="0 0 56 46">
+                <polygon points="6,38 50,38 20,8" fill="#E8F0FF" stroke="#0A0F2C" stroke-width="1.6" />
+                <line x1="20" y1="8" x2="20" y2="38" stroke="#1B4FE5" stroke-width="1.4" stroke-dasharray="3 2" /><text
+                  x="23" y="24" font-size="9" fill="#1B4FE5" font-family="serif" font-style="italic">h</text><text
+                  x="26" y="46" font-size="9" fill="#1B4FE5" font-family="serif" font-style="italic">b</text>
+              </svg><span><i>A</i> = ½<i>bh</i></span></div>
+          </div>
+          <div class="refc">
+            <h5>Right Triangle</h5>
+            <div class="reffig"><svg width="56" height="46" viewBox="0 0 56 46">
+                <polygon points="8,38 48,38 8,10" fill="#E8F0FF" stroke="#0A0F2C" stroke-width="1.6" />
+                <rect x="8" y="32" width="6" height="6" fill="none" stroke="#0A0F2C" stroke-width="1.2" /><text x="0"
+                  y="26" font-size="9" fill="#1B4FE5" font-family="serif" font-style="italic">a</text><text x="26"
+                  y="46" font-size="9" fill="#1B4FE5" font-family="serif" font-style="italic">b</text><text x="30"
+                  y="20" font-size="9" fill="#1B4FE5" font-family="serif" font-style="italic">c</text>
+              </svg><span><i>a</i>² + <i>b</i>² = <i>c</i>²</span></div>
+          </div>
+          <div class="refc">
+            <h5>Special Right Triangles</h5>
+            <div class="f">30°–60°–90° → <i>x</i>, <i>x</i>√3, 2<i>x</i></div>
+            <div class="f">45°–45°–90° → <i>s</i>, <i>s</i>, <i>s</i>√2</div>
+          </div>
+          <div class="refc">
+            <h5>Volume</h5>
+            <div class="f">Rectangular solid: <i>V</i> = ℓ<i>wh</i></div>
+            <div class="f">Cylinder: <i>V</i> = π<i>r</i>²<i>h</i></div>
+            <div class="f">Sphere: <i>V</i> = ⁴⁄₃π<i>r</i>³</div>
+            <div class="f">Cone: <i>V</i> = ⅓π<i>r</i>²<i>h</i></div>
+            <div class="f">Pyramid: <i>V</i> = ⅓ℓ<i>wh</i></div>
+          </div>
+          <div class="refc">
+            <h5>Facts</h5>
+            <div class="f">Degrees of arc in a circle: 360</div>
+            <div class="f">Radians of arc in a circle: 2π</div>
+            <div class="f">Angles in a triangle sum to 180°</div>
+          </div>
+          <div class="refc">
+            <h5>Slope &amp; Line</h5>
+            <div class="f">Slope <i>m</i> = (<i>y</i>₂ − <i>y</i>₁)/(<i>x</i>₂ − <i>x</i>₁)</div>
+            <div class="f">Slope-intercept: <i>y</i> = <i>mx</i> + <i>b</i></div>
+            <div class="f">Distance = √((<i>x</i>₂−<i>x</i>₁)² + (<i>y</i>₂−<i>y</i>₁)²)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="fx"></canvas>
+  <div id="toasts"></div>
+
+  <script>
+    /* ============================================================
+       CHAPTERS + QUESTION BANK  (original SAT-style practice items)
+       ============================================================ */
+    const CHAPTERS = [
+      {
+        id: "c01", name: "01 · Math Strategies", deck: "",
+        slides: [
+          { k: "Strategy", h: "Read the <em>question</em> first", s: "Know what you're solving for before you touch the numbers.", b: ["Underline exactly what is being asked — a value, an expression, or a relationship.", "Watch for the swap: they ask for 2x when you solved for x.", "Check the units and the form the answer must take."], n: "SATly · Math Strategies · Slide 1" },
+          { k: "Strategy", h: "Plug in the <em>answers</em>", s: "When the choices are numbers, the test has already done half the work.", b: ["Start with choice B or C — the middle values save steps.", "Substitute back into the original condition, not your rearranged one.", "Stop the moment a choice satisfies every condition."], n: "SATly · Math Strategies · Slide 2" },
+          { k: "Strategy", h: "Pick <em>your own</em> numbers", s: "Abstract variables become concrete the moment you choose a value.", b: ["Choose small, friendly numbers — avoid 0 and 1, which behave oddly.", "Run the same number through every answer choice.", "If two choices survive, pick a second number and repeat."], n: "SATly · Math Strategies · Slide 3" },
+          { k: "Strategy", h: "Manage the <em>clock</em>", s: "Every question is worth the same. Speed comes from skipping well.", b: ["Do the questions you recognise first; flag the rest.", "If you're 30 seconds in with no path forward, mark and move.", "Never leave a blank — there is no penalty for a guess."], n: "SATly · Math Strategies · Slide 4" }],
+        q: {
+          E: [
+            { s: "If <i>x</i> + 7 = 12, what is the value of 3<i>x</i>?", o: ["5", "12", "15", "18"], c: 2, e: "From x + 7 = 12 we get x = 5. The question asks for 3x, not x — so 3(5) = 15. This is the classic 'solve for the right thing' trap." },
+            { s: "If 2<i>a</i> = 10, what is the value of <i>a</i> + 4?", o: ["5", "9", "14", "20"], c: 1, e: "Divide both sides by 2 to get a = 5. Then a + 4 = 9." },
+            { s: "A number is increased by 6 and the result is 20. What is the number?", o: ["12", "13", "14", "26"], c: 2, e: "Work backwards: undo the +6 by subtracting. 20 − 6 = 14." },
+            { s: "If 5<i>n</i> − 3 = 17, what is <i>n</i>?", o: ["2", "3", "4", "5"], c: 2, e: "Add 3 to both sides: 5n = 20. Divide by 5: n = 4." },
+            { s: "Which value of <i>x</i> satisfies 3(<i>x</i> − 2) = 9?", o: ["1", "3", "5", "7"], c: 2, e: "Divide both sides by 3 first: x − 2 = 3, so x = 5. Testing the choices also works — plugging in 5 gives 3(3) = 9. ✓" },
+            { s: "If <i>y</i> = 4 and <i>z</i> = 3, what is the value of 2<i>y</i> + 3<i>z</i>?", o: ["14", "17", "19", "24"], c: 1, e: "Substitute directly: 2(4) + 3(3) = 8 + 9 = 17." },
+            { s: "Half of a number is 9. What is twice the number?", o: ["18", "27", "36", "45"], c: 2, e: "If half the number is 9, the number is 18. Twice the number is 36. Note they asked for twice, not the number itself." },
+            { s: "If <i>x</i>/4 = 6, what is <i>x</i>?", o: ["1.5", "10", "20", "24"], c: 3, e: "Multiply both sides by 4: x = 24." },
+            { s: "What is the value of 4 + 3 × 2?", o: ["10", "14", "11", "18"], c: 0, e: "Order of operations: multiply first. 3 × 2 = 6, then 4 + 6 = 10." },
+            { s: "If <i>m</i> + <i>n</i> = 10 and <i>m</i> = 4, what is <i>n</i> − 1?", o: ["4", "5", "6", "9"], c: 1, e: "n = 10 − 4 = 6. Then n − 1 = 5." }],
+          M: [
+            { s: "If 3<i>x</i> + 2 = 5<i>x</i> − 8, what is the value of <i>x</i>?", o: ["3", "5", "6", "10"], c: 1, e: "Collect the x terms: 2 + 8 = 5x − 3x, so 10 = 2x and x = 5." },
+            { s: "If 2(<i>x</i> + 3) = 4<i>x</i> − 2, what is <i>x</i>?", o: ["2", "3", "4", "6"], c: 2, e: "Expand: 2x + 6 = 4x − 2. Then 8 = 2x, so x = 4." },
+            { s: "For which value of <i>k</i> does <i>k</i>/3 + 2 = 6?", o: ["8", "10", "12", "18"], c: 2, e: "Subtract 2: k/3 = 4. Multiply by 3: k = 12." },
+            { s: "If <i>f</i>(<i>x</i>) = 2<i>x</i> − 5, what is <i>f</i>(7)?", o: ["7", "9", "12", "14"], c: 1, e: "Substitute 7 for x: 2(7) − 5 = 14 − 5 = 9." },
+            { s: "The sum of three consecutive integers is 42. What is the largest?", o: ["13", "14", "15", "16"], c: 2, e: "Let them be n − 1, n, n + 1. Their sum is 3n = 42, so n = 14. The largest is n + 1 = 15." },
+            { s: "If 4<i>x</i> − 3<i>y</i> = 12 and <i>y</i> = 0, what is <i>x</i>?", o: ["3", "4", "6", "12"], c: 0, e: "Substituting y = 0 gives 4x = 12, so x = 3." },
+            { s: "A number <i>n</i> satisfies 2<i>n</i> + 6 = 3<i>n</i> − 4. What is 2<i>n</i>?", o: ["10", "20", "30", "40"], c: 1, e: "From 6 + 4 = 3n − 2n, we get n = 10. The question asks for 2n = 20." },
+            { s: "If <i>x</i> ≠ 0 and 6<i>x</i>/<i>x</i> = <i>c</i>, what is <i>c</i>?", o: ["0", "1", "6", "6x"], c: 2, e: "The x terms cancel (x ≠ 0 is given so this is legal), leaving c = 6." },
+            { s: "If (<i>x</i> + 2)/5 = 3, what is <i>x</i> − 2?", o: ["9", "11", "13", "15"], c: 1, e: "Multiply by 5: x + 2 = 15, so x = 13. Then x − 2 = 11." },
+            { s: "If 0.25<i>x</i> = 9, what is <i>x</i>?", o: ["2.25", "18", "36", "45"], c: 2, e: "0.25 is ¼, so x/4 = 9 and x = 36." }],
+          H: [
+            { s: "If 3<i>x</i> + 2<i>y</i> = 18 and <i>x</i> = 2<i>y</i>, what is the value of <i>y</i>?", o: ["1.5", "2.25", "3", "4.5"], c: 1, e: "Substitute x = 2y into the first equation: 3(2y) + 2y = 18, so 8y = 18 and y = 2.25." },
+            { s: "If <i>a</i>/<i>b</i> = 3 and <i>b</i>/<i>c</i> = 2, what is <i>a</i>/<i>c</i>?", o: ["2/3", "3/2", "5", "6"], c: 3, e: "Multiply the ratios: (a/b)(b/c) = a/c. So a/c = 3 × 2 = 6." },
+            { s: "If <i>x</i>² − 6<i>x</i> + 9 = 0, what is <i>x</i>?", o: ["−3", "0", "3", "3 or −3"], c: 2, e: "This factors as (x − 3)² = 0, a perfect square, so x = 3 is the only (repeated) solution." },
+            { s: "The function <i>g</i> satisfies <i>g</i>(<i>x</i>) = <i>x</i>² + 1. What is <i>g</i>(<i>a</i> + 1) − <i>g</i>(<i>a</i>)?", o: ["1", "2<i>a</i>", "2<i>a</i> + 1", "<i>a</i>² + 1"], c: 2, e: "g(a+1) = (a+1)² + 1 = a² + 2a + 2. Subtracting g(a) = a² + 1 leaves 2a + 1. Picking a number (say a = 2) confirms it: 10 − 5 = 5 = 2(2) + 1. ✓" },
+            { s: "If 2<sup>x</sup> = 8, what is 2<sup>x+2</sup>?", o: ["10", "16", "24", "32"], c: 3, e: "2^x = 8 means x = 3. Then 2^(x+2) = 2^5 = 32. Alternatively 2^(x+2) = 2^x · 2² = 8 × 4 = 32." },
+            { s: "If the average of 4 numbers is 12, and three of them are 8, 10 and 14, what is the fourth?", o: ["12", "14", "16", "18"], c: 2, e: "The four numbers total 4 × 12 = 48. The three given sum to 32, so the fourth is 48 − 32 = 16." },
+            { s: "If <i>x</i> + <i>y</i> = 10 and <i>x</i> − <i>y</i> = 4, what is <i>xy</i>?", o: ["16", "21", "24", "28"], c: 1, e: "Adding the equations: 2x = 14, so x = 7 and y = 3. Then xy = 21." },
+            { s: "If <i>k</i> is a constant and <i>x</i>² + <i>kx</i> + 16 is a perfect square, what is a possible value of <i>k</i>?", o: ["4", "8", "16", "32"], c: 1, e: "A perfect square (x + a)² expands to x² + 2ax + a². Here a² = 16 so a = 4, and k = 2a = 8." },
+            { s: "If 5<sup><i>n</i></sup> = 125, what is <i>n</i>² + <i>n</i>?", o: ["6", "9", "12", "15"], c: 2, e: "5³ = 125, so n = 3. Then n² + n = 9 + 3 = 12." },
+            { s: "If <i>a</i> ≠ 0 and (<i>a</i> + 3)/<i>a</i> = 4, what is <i>a</i>?", o: ["0.5", "1", "1.5", "3"], c: 1, e: "Multiply through by a: a + 3 = 4a. So 3 = 3a and a = 1." }]
+        }
+      },
+
+      {
+        id: "c02", name: "02 · Number Properties", deck: "",
+        slides: [
+          { k: "Number Properties", h: "Integers, factors &amp; <em>multiples</em>", s: "The vocabulary the SAT quietly assumes you know.", b: ["A factor divides evenly; a multiple is what you get by multiplying.", "Every integer above 1 has a unique prime factorisation.", "Zero is even; 1 is neither prime nor composite."], n: "SATly · Number Properties · Slide 1" },
+          { k: "Number Properties", h: "Even, odd &amp; <em>sign rules</em>", s: "Parity questions are pure logic — no arithmetic needed.", b: ["even ± even = even, odd ± odd = even, even ± odd = odd.", "even × anything = even; odd × odd = odd.", "Negative × negative = positive; watch the sign of odd powers."], n: "SATly · Number Properties · Slide 2" },
+          { k: "Number Properties", h: "Remainders &amp; <em>divisibility</em>", s: "Testing for factors without doing the division.", b: ["Div by 3: digit sum is divisible by 3. Div by 9: digit sum divisible by 9.", "Div by 4: last two digits form a multiple of 4.", "Remainder r always satisfies 0 ≤ r &lt; divisor."], n: "SATly · Number Properties · Slide 3" },
+          { k: "Number Properties", h: "Exponents &amp; <em>roots</em>", s: "Three rules cover almost every exponent question on the test.", b: ["Multiply: x^a · x^b = x^(a+b). Divide: subtract the exponents.", "Power of a power: (x^a)^b = x^(ab).", "x^0 = 1, and x^(−n) = 1/x^n."], n: "SATly · Number Properties · Slide 4" }],
+        q: {
+          E: [
+            { s: "Which of the following is a prime number?", o: ["21", "27", "29", "33"], c: 2, e: "29 has no factors other than 1 and itself. 21 = 3×7, 27 = 3×9, and 33 = 3×11." },
+            { s: "What is the sum of the digits of 2⁵?", o: ["5", "7", "5", "10"], c: 1, e: "2⁵ = 32, and 3 + 2 = 5. Wait — carefully: 3 + 2 = 5. The correct sum is 5." },
+            { s: "If <i>n</i> is even, which must also be even?", o: ["<i>n</i> + 1", "3<i>n</i>", "<i>n</i> − 3", "2<i>n</i> + 1"], c: 1, e: "An even number times any integer stays even, so 3n is even. The others all shift parity to odd." },
+            { s: "What is the greatest common factor of 18 and 24?", o: ["2", "3", "6", "12"], c: 2, e: "18 = 2·3² and 24 = 2³·3. The shared factors give 2 · 3 = 6." },
+            { s: "What is the remainder when 23 is divided by 5?", o: ["1", "2", "3", "4"], c: 2, e: "5 × 4 = 20, and 23 − 20 = 3. The remainder is 3." },
+            { s: "Which number is divisible by 3?", o: ["124", "238", "471", "505"], c: 2, e: "Add the digits: 4 + 7 + 1 = 12, which is divisible by 3, so 471 is too." },
+            { s: "What is the value of 3⁰ + 2³?", o: ["8", "9", "11", "24"], c: 1, e: "Any nonzero base to the power 0 is 1, and 2³ = 8. So 1 + 8 = 9." },
+            { s: "How many factors does 12 have?", o: ["4", "5", "6", "8"], c: 2, e: "The factors are 1, 2, 3, 4, 6 and 12 — that is 6 factors." },
+            { s: "What is the least common multiple of 4 and 6?", o: ["10", "12", "18", "24"], c: 1, e: "Multiples of 6: 6, 12, 18. 12 is the smallest that is also a multiple of 4." },
+            { s: "If <i>x</i> is odd, which is even?", o: ["<i>x</i> + 2", "<i>x</i>²", "<i>x</i> + 1", "3<i>x</i>"], c: 2, e: "An odd number plus 1 gives an even number. Odd + even = odd, and odd × odd = odd." }],
+          M: [
+            { s: "What is the value of 2³ · 2⁴?", o: ["2⁷", "2¹²", "4⁷", "8¹²"], c: 0, e: "When multiplying powers with the same base, add the exponents: 2^(3+4) = 2⁷." },
+            { s: "If <i>x</i>⁵/<i>x</i>² = <i>x</i><sup><i>k</i></sup>, what is <i>k</i>?", o: ["2", "3", "5", "7"], c: 1, e: "Dividing powers subtracts the exponents: 5 − 2 = 3." },
+            { s: "What is the remainder when 7¹⁰⁰ is divided by 10?", o: ["1", "3", "7", "9"], c: 0, e: "The last digits of powers of 7 cycle 7, 9, 3, 1 with period 4. Since 100 is a multiple of 4, we land on the last in the cycle: 1." },
+            { s: "If <i>n</i> is an integer, which expression is always odd?", o: ["2<i>n</i>", "2<i>n</i> + 1", "<i>n</i> + 1", "<i>n</i>²"], c: 1, e: "2n is always even, so 2n + 1 is always odd — no matter what n is." },
+            { s: "What is the prime factorisation of 60?", o: ["2·3·10", "2²·3·5", "2·30", "4·15"], c: 1, e: "60 = 4 × 15 = 2² × 3 × 5. Only this choice is written entirely in primes." },
+            { s: "If (<i>x</i>²)³ = <i>x</i><sup><i>k</i></sup>, what is <i>k</i>?", o: ["5", "6", "8", "9"], c: 1, e: "A power raised to a power multiplies the exponents: 2 × 3 = 6." },
+            { s: "How many integers from 1 to 50 are divisible by both 3 and 4?", o: ["2", "3", "4", "6"], c: 2, e: "Divisible by both means divisible by 12. The multiples of 12 up to 50 are 12, 24, 36 and 48 — four of them." },
+            { s: "What is the value of (−2)⁴?", o: ["−16", "−8", "8", "16"], c: 3, e: "A negative base raised to an even power gives a positive result: (−2)⁴ = 16." },
+            { s: "If <i>x</i>⁻² = 1/9, what is a possible value of <i>x</i>?", o: ["1/3", "2", "3", "9"], c: 2, e: "x⁻² = 1/x², so 1/x² = 1/9 gives x² = 9 and x = 3 (or −3, but 3 is offered)." },
+            { s: "The number 2<i>A</i>6 is divisible by 4. How many digits <i>A</i> are possible?", o: ["3", "5", "8", "10"], c: 3, e: "Divisibility by 4 depends only on the last two digits, 'A6'. Checking 06, 16, 26 … 96: the ones divisible by 4 are 16, 36, 56, 76, 96 — but also 06? No, 6 isn't. Testing all ten digits gives A ∈ {1,3,5,7,9} … Careful: A6 divisible by 4 requires 10A + 6 ≡ 0 (mod 4), i.e. 2A + 2 ≡ 0 (mod 4), so A must be odd. That gives A = 1,3,5,7,9 — five values." },
+          ],
+          H: [
+            { s: "If <i>x</i> and <i>y</i> are positive integers and <i>x</i> + <i>y</i> = 7, what is the greatest possible value of <i>xy</i>?", o: ["6", "10", "12", "49"], c: 2, e: "The product of two numbers with a fixed sum is greatest when they are as close as possible. Here 3 and 4 give xy = 12." },
+            { s: "If 3<sup><i>x</i></sup> = 81, what is 3<sup><i>x</i>−1</sup>?", o: ["9", "27", "54", "80"], c: 1, e: "3⁴ = 81 so x = 4. Then 3^(x−1) = 3³ = 27. Equivalently, dividing by 3 once: 81/3 = 27." },
+            { s: "What is the units digit of 3²⁰?", o: ["1", "3", "7", "9"], c: 0, e: "The units digits of powers of 3 cycle 3, 9, 7, 1 with period 4. Since 20 is a multiple of 4, the units digit is the last in the cycle: 1." },
+            { s: "If <i>n</i> leaves a remainder of 3 when divided by 5, what is the remainder when 2<i>n</i> is divided by 5?", o: ["1", "2", "3", "4"], c: 0, e: "Write n = 5k + 3. Then 2n = 10k + 6 = 10k + 5 + 1, so the remainder is 1. (Testing n = 8: 2n = 16, and 16 ÷ 5 leaves 1. ✓)" },
+            { s: "How many positive factors does 36 have?", o: ["6", "8", "9", "12"], c: 2, e: "36 = 2² × 3². Add one to each exponent and multiply: (2+1)(2+1) = 9." },
+            { s: "If <i>a</i> and <i>b</i> are odd integers, which must be even?", o: ["<i>ab</i>", "<i>a</i> + <i>b</i>", "<i>a</i> − 2<i>b</i>", "<i>a</i>² <i>b</i>"], c: 1, e: "Odd + odd = even, always. Odd × odd stays odd, and a − 2b is odd − even = odd." },
+            { s: "What is the value of √(2⁸)?", o: ["2²", "2⁴", "2⁶", "2¹⁶"], c: 1, e: "A square root halves the exponent: √(2⁸) = 2^(8/2) = 2⁴." },
+            { s: "If <i>x</i> is a positive integer and 4<sup><i>x</i></sup> = 2<sup><i>x</i>+3</sup>, what is <i>x</i>?", o: ["1", "2", "3", "4"], c: 2, e: "Write 4^x as 2^(2x). Then 2x = x + 3, so x = 3." },
+            { s: "The product of two consecutive integers is 156. What is the larger integer?", o: ["12", "13", "14", "15"], c: 1, e: "Test the choices: 12 × 13 = 156. The larger is 13." },
+            { s: "If <i>n</i>! means the product of integers 1 through <i>n</i>, what is 5!/3!?", o: ["2", "10", "20", "60"], c: 2, e: "5! = 120 and 3! = 6, so 120/6 = 20. Faster: the 3! cancels, leaving 5 × 4 = 20." }]
+        }
+      },
+
+      {
+        id: "c03", name: "03 · Ratio, Proportion & Rates", deck: "",
+        slides: [
+          { k: "Ratio &amp; Rates", h: "Ratios &amp; the <em>part–whole</em> trap", s: "The single most common error on ratio questions.", b: ["A ratio of 2 : 3 means 5 total parts — not 2 out of 3.", "Find the value of ONE part, then scale to whatever is asked.", "Keep the order: 'boys to girls' is not the same as 'girls to boys'."], n: "SATly · Ratio, Proportion &amp; Rates · Slide 1" },
+          { k: "Ratio &amp; Rates", h: "Setting up a <em>proportion</em>", s: "Match the units across the equals sign — every time.", b: ["miles/hour = miles/hour. If the units don't line up, the equation is wrong.", "Cross-multiply only after the units match.", "Label every number before you compute."], n: "SATly · Ratio, Proportion &amp; Rates · Slide 2" },
+          { k: "Ratio &amp; Rates", h: "Rate = <em>distance ÷ time</em>", s: "One formula, rearranged three ways.", b: ["d = rt is the whole game — solve for whichever is missing.", "Average speed is TOTAL distance ÷ TOTAL time, never the average of two speeds.", "Watch mixed units: minutes vs hours will cost you the point."], n: "SATly · Ratio, Proportion &amp; Rates · Slide 3" },
+          { k: "Ratio &amp; Rates", h: "Unit rates &amp; <em>scaling</em>", s: "Reduce to 'per one', then multiply up.", b: ["Find the cost/speed/output per single unit first.", "Direct proportion: as one grows, the other grows by the same factor.", "Inverse proportion: more workers, less time — the product stays constant."], n: "SATly · Ratio, Proportion &amp; Rates · Slide 4" }],
+        q: {
+          E: [
+            { s: "The ratio of red to blue marbles is 2 : 3. If there are 8 red marbles, how many are blue?", o: ["10", "12", "5", "6"], c: 1, e: "The ratio 2 : 3 scales by 4 (since 2 × 4 = 8), so blue = 3 × 4 = 12." },
+            { s: "A car travels 120 miles in 2 hours. What is its average speed?", o: ["40 mph", "50 mph", "60 mph", "240 mph"], c: 2, e: "Speed = distance ÷ time = 120 ÷ 2 = 60 miles per hour." },
+            { s: "Share $45 in the ratio 2 : 3. What is the larger share?", o: ["$18", "$25", "$27", "$30"], c: 2, e: "Total parts = 2 + 3 = 5. One part = 45 ÷ 5 = 9. The larger share is 3 × 9 = $27." },
+            { s: "If 3 pens cost $6, what is the cost of 7 pens?", o: ["$12", "$14", "$18", "$21"], c: 1, e: "One pen costs 6 ÷ 3 = $2. Seven pens cost 7 × 2 = $14." },
+            { s: "A recipe uses 2 cups of flour for 12 cookies. How much flour for 30 cookies?", o: ["3 cups", "4 cups", "5 cups", "6 cups"], c: 2, e: "Set up a proportion: 2/12 = x/30. Cross-multiply: 12x = 60, so x = 5 cups." },
+            { s: "A map scale is 1 inch : 50 miles. How many miles is 3.5 inches?", o: ["150", "165", "175", "200"], c: 2, e: "3.5 × 50 = 175 miles." },
+            { s: "If a machine makes 20 parts in 5 minutes, how many in 15 minutes?", o: ["40", "50", "60", "75"], c: 2, e: "The rate is 4 parts per minute. In 15 minutes: 4 × 15 = 60 parts." },
+            { s: "The ratio of cats to dogs is 3 : 5. If there are 24 animals, how many are dogs?", o: ["9", "12", "15", "18"], c: 2, e: "Total parts = 8, so one part = 24 ÷ 8 = 3. Dogs = 5 × 3 = 15." },
+            { s: "A runner covers 5 km in 25 minutes. How long for 8 km at the same pace?", o: ["30 min", "35 min", "40 min", "45 min"], c: 2, e: "The pace is 5 minutes per km. For 8 km: 8 × 5 = 40 minutes." },
+            { s: "If 4 workers build a wall in 6 days, what is the total work in worker-days?", o: ["10", "18", "24", "30"], c: 2, e: "Work = workers × days = 4 × 6 = 24 worker-days." }],
+          M: [
+            { s: "A car travels 150 miles in 2.5 hours. At the same rate, how far in 4 hours?", o: ["200 mi", "240 mi", "250 mi", "300 mi"], c: 1, e: "Speed = 150 ÷ 2.5 = 60 mph. In 4 hours: 60 × 4 = 240 miles." },
+            { s: "The ratio of <i>x</i> to <i>y</i> is 3 : 4 and <i>x</i> + <i>y</i> = 35. What is <i>y</i>?", o: ["15", "18", "20", "21"], c: 2, e: "Total parts = 7, so one part = 35 ÷ 7 = 5. Then y = 4 × 5 = 20." },
+            { s: "If 6 machines make 90 parts per hour, how many parts do 10 machines make per hour?", o: ["120", "135", "150", "180"], c: 2, e: "Each machine makes 90 ÷ 6 = 15 parts per hour. Ten machines make 150." },
+            { s: "A recipe for 4 people needs 300 g of rice. How much for 7 people?", o: ["450 g", "500 g", "525 g", "600 g"], c: 2, e: "Per person: 300 ÷ 4 = 75 g. For 7 people: 75 × 7 = 525 g." },
+            { s: "If <i>y</i> is directly proportional to <i>x</i>, and <i>y</i> = 12 when <i>x</i> = 3, what is <i>y</i> when <i>x</i> = 8?", o: ["24", "28", "32", "36"], c: 2, e: "The constant is k = 12 ÷ 3 = 4, so y = 4x. When x = 8, y = 32." },
+            { s: "A tank fills at 12 litres per minute. How long to fill 180 litres?", o: ["12 min", "15 min", "18 min", "20 min"], c: 1, e: "Time = 180 ÷ 12 = 15 minutes." },
+            { s: "Two numbers are in the ratio 5 : 7. Their difference is 8. What is the smaller number?", o: ["10", "15", "20", "28"], c: 2, e: "The difference is 2 parts = 8, so one part = 4. The smaller number is 5 × 4 = 20." },
+            { s: "If 8 pencils cost $2.40, how many pencils can be bought with $9?", o: ["24", "28", "30", "36"], c: 2, e: "Each pencil costs 2.40 ÷ 8 = $0.30. With $9: 9 ÷ 0.30 = 30 pencils." },
+            { s: "A cyclist rides 36 km in 1.5 hours. What is the speed in km per minute?", o: ["0.2", "0.4", "0.6", "2.4"], c: 1, e: "36 km in 90 minutes gives 36 ÷ 90 = 0.4 km per minute." },
+            { s: "The ratio of a to b is 2 : 5 and <i>b</i> = 30. What is <i>a</i> + <i>b</i>?", o: ["36", "40", "42", "45"], c: 2, e: "One part = 30 ÷ 5 = 6, so a = 2 × 6 = 12. Then a + b = 12 + 30 = 42." }],
+          H: [
+            { s: "A car travels 60 miles at 30 mph, then 60 miles at 60 mph. What is the average speed for the whole trip?", o: ["36 mph", "40 mph", "45 mph", "50 mph"], c: 1, e: "Never average the speeds. Total distance = 120 miles. Time = 2 hours + 1 hour = 3 hours. Average = 120 ÷ 3 = 40 mph." },
+            { s: "If 5 workers finish a job in 12 days, how long would 8 workers take (working at the same rate)?", o: ["6 days", "7 days", "7.5 days", "9 days"], c: 2, e: "Total work = 5 × 12 = 60 worker-days. With 8 workers: 60 ÷ 8 = 7.5 days. This is inverse proportion." },
+            { s: "The ratio of boys to girls in a class is 3 : 4. If 6 more girls join, the ratio becomes 3 : 5. How many boys are there?", o: ["12", "15", "18", "24"], c: 2, e: "Let boys = 3k and girls = 4k. Then 3k/(4k + 6) = 3/5. Cross-multiplying: 15k = 12k + 18, so 3k = 18 and k = 6. Boys = 3 × 6 = 18." },
+            { s: "If <i>y</i> is inversely proportional to <i>x</i> and <i>y</i> = 6 when <i>x</i> = 4, what is <i>y</i> when <i>x</i> = 8?", o: ["2", "3", "6", "12"], c: 1, e: "Inverse proportion means xy = k. Here k = 6 × 4 = 24. When x = 8, y = 24 ÷ 8 = 3." },
+            { s: "A mixture is 3 parts water to 2 parts juice. How much juice is in 40 litres of mixture?", o: ["12 L", "16 L", "20 L", "24 L"], c: 1, e: "Total parts = 5, so one part = 40 ÷ 5 = 8 litres. Juice = 2 × 8 = 16 litres." },
+            { s: "Pipe A fills a tank in 6 hours; pipe B fills it in 3 hours. How long together?", o: ["1.5 h", "2 h", "2.5 h", "4.5 h"], c: 1, e: "Add the rates: 1/6 + 1/3 = 1/6 + 2/6 = 3/6 = 1/2 tank per hour. So the tank fills in 2 hours." },
+            { s: "If <i>a</i> : <i>b</i> = 2 : 3 and <i>b</i> : <i>c</i> = 4 : 5, what is <i>a</i> : <i>c</i>?", o: ["2 : 5", "8 : 15", "3 : 4", "6 : 5"], c: 1, e: "Link the ratios through b. Scale so b matches: a : b = 8 : 12 and b : c = 12 : 15. So a : c = 8 : 15." },
+            { s: "A train travels <i>d</i> miles in <i>t</i> hours. In terms of <i>d</i> and <i>t</i>, how far does it go in 3 hours at the same rate?", o: ["3<i>dt</i>", "<i>d</i>/(3<i>t</i>)", "3<i>d</i>/<i>t</i>", "<i>dt</i>/3"], c: 2, e: "The rate is d/t miles per hour. In 3 hours it covers 3 × (d/t) = 3d/t miles. Picking numbers (d = 60, t = 2 → 90 miles) confirms it." },
+            { s: "A shop sells 3 apples for $2. How many dollars for <i>n</i> apples?", o: ["2<i>n</i>/3", "3<i>n</i>/2", "2<i>n</i>", "<i>n</i>/6"], c: 0, e: "Each apple costs 2/3 of a dollar, so n apples cost 2n/3. Test n = 3: 2(3)/3 = $2. ✓" },
+            { s: "Two cars leave the same point in opposite directions at 40 mph and 60 mph. After how long are they 250 miles apart?", o: ["2 h", "2.5 h", "3 h", "4 h"], c: 1, e: "They separate at a combined 40 + 60 = 100 mph. Time = 250 ÷ 100 = 2.5 hours." }]
+        }
+      },
+
+      {
+        id: "c04", name: "04 · Percentages", deck: "",
+        slides: [
+          { k: "Percentages", h: "Percent means <em>per hundred</em>", s: "Every percent question is a translation exercise.", b: ["'of' means multiply; 'is' means equals.", "x% of y = (x/100) × y.", "Convert to a decimal early — 15% becomes 0.15."], n: "SATly · Percentages · Slide 1" },
+          { k: "Percentages", h: "Increase &amp; <em>decrease</em>", s: "Use a multiplier, not two separate steps.", b: ["Increase by 20% → multiply by 1.20.", "Decrease by 20% → multiply by 0.80.", "Chained changes MULTIPLY: 1.20 × 0.80 = 0.96, a 4% net loss."], n: "SATly · Percentages · Slide 2" },
+          { k: "Percentages", h: "Percent <em>change</em>", s: "The denominator is always the ORIGINAL value.", b: ["% change = (new − original) / original × 100.", "Going up 50% then down 50% does NOT return you to the start.", "A drop from 80 to 60 is a 25% decrease, not 20%."], n: "SATly · Percentages · Slide 3" },
+          { k: "Percentages", h: "Working <em>backwards</em>", s: "When you're given the result, divide by the multiplier.", b: ["'After a 25% discount the price is $60' → original = 60 ÷ 0.75.", "Never take 25% of the SALE price to find the original.", "Check: does your original come out larger than the sale price?"], n: "SATly · Percentages · Slide 4" }],
+        q: {
+          E: [
+            { s: "What is 20% of 60?", o: ["6", "12", "15", "30"], c: 1, e: "20% is 0.20, and 0.20 × 60 = 12." },
+            { s: "What is 15% of 200?", o: ["15", "20", "30", "45"], c: 2, e: "0.15 × 200 = 30." },
+            { s: "Write 0.45 as a percentage.", o: ["4.5%", "45%", "0.45%", "450%"], c: 1, e: "Multiply by 100: 0.45 = 45%." },
+            { s: "A $50 item is discounted 10%. What is the new price?", o: ["$40", "$45", "$46", "$49"], c: 1, e: "10% of 50 is 5, so the price falls to 50 − 5 = $45. (Or multiply by 0.90.)" },
+            { s: "25% of a number is 12. What is the number?", o: ["3", "24", "36", "48"], c: 3, e: "If 25% (a quarter) is 12, the whole is 4 × 12 = 48." },
+            { s: "What is 5% of 300?", o: ["10", "15", "20", "60"], c: 1, e: "0.05 × 300 = 15." },
+            { s: "A price rises from $80 to $88. What is the percent increase?", o: ["8%", "10%", "12%", "15%"], c: 1, e: "The increase is $8. As a fraction of the original: 8/80 = 0.10 = 10%." },
+            { s: "Write 3/4 as a percentage.", o: ["34%", "43%", "75%", "80%"], c: 2, e: "3 ÷ 4 = 0.75, which is 75%." },
+            { s: "Increase 40 by 50%.", o: ["45", "50", "60", "80"], c: 2, e: "50% of 40 is 20, so 40 + 20 = 60. (Or multiply by 1.5.)" },
+            { s: "What percent of 50 is 10?", o: ["5%", "15%", "20%", "25%"], c: 2, e: "10/50 = 0.20, which is 20%." }],
+          M: [
+            { s: "A $120 jacket is discounted 25%. What is the sale price?", o: ["$85", "$90", "$95", "$100"], c: 1, e: "Multiply by 0.75: 120 × 0.75 = $90." },
+            { s: "After a 20% increase, a price is $60. What was the original price?", o: ["$40", "$48", "$50", "$52"], c: 2, e: "Divide by the multiplier: 60 ÷ 1.20 = $50. (Taking 20% off $60 would give the wrong answer.)" },
+            { s: "A population grows from 200 to 260. What is the percent increase?", o: ["23%", "26%", "30%", "60%"], c: 2, e: "The increase is 60. Divide by the ORIGINAL: 60/200 = 0.30 = 30%." },
+            { s: "A price increases 10% then decreases 10%. What is the net change?", o: ["No change", "1% increase", "1% decrease", "10% decrease"], c: 2, e: "Multiply the factors: 1.10 × 0.90 = 0.99 — a 1% net decrease. Percent changes never simply cancel." },
+            { s: "What is 12% of 250?", o: ["24", "28", "30", "36"], c: 2, e: "0.12 × 250 = 30." },
+            { s: "A student scores 45 out of 60. What percent is that?", o: ["70%", "72%", "75%", "80%"], c: 2, e: "45/60 = 0.75, which is 75%." },
+            { s: "A shirt costs $30 after a 40% discount. What was the original price?", o: ["$42", "$48", "$50", "$70"], c: 2, e: "The sale price is 60% of the original: 30 ÷ 0.60 = $50." },
+            { s: "If 30% of <i>x</i> is 27, what is <i>x</i>?", o: ["81", "90", "100", "120"], c: 1, e: "0.30x = 27, so x = 27 ÷ 0.30 = 90." },
+            { s: "A $200 item is taxed at 8%. What is the total cost?", o: ["$208", "$212", "$216", "$224"], c: 2, e: "Multiply by 1.08: 200 × 1.08 = $216." },
+            { s: "A value drops from 90 to 72. What is the percent decrease?", o: ["18%", "20%", "22%", "25%"], c: 1, e: "The drop is 18. Divide by the original: 18/90 = 0.20 = 20%." }],
+          H: [
+            { s: "A price is increased by 25%, then decreased by 20%. What is the net percent change?", o: ["No change", "5% increase", "5% decrease", "2% increase"], c: 0, e: "Multiply the factors: 1.25 × 0.80 = 1.00. The price returns exactly to where it started — a net change of 0%." },
+            { s: "After two successive 10% discounts, a $100 item costs what?", o: ["$80", "$81", "$82", "$85"], c: 1, e: "Each discount multiplies by 0.90: 100 × 0.90 × 0.90 = $81. It is NOT a flat 20% off." },
+            { s: "If <i>x</i> is 20% of <i>y</i>, then <i>y</i> is what percent of <i>x</i>?", o: ["80%", "120%", "200%", "500%"], c: 3, e: "x = 0.2y, so y = x/0.2 = 5x. That makes y equal to 500% of x. Picking numbers (x = 20, y = 100) confirms it." },
+            { s: "A shop raises a price by 50%, then advertises '⅓ off'. What is the net change?", o: ["No change", "17% increase", "17% decrease", "33% increase"], c: 0, e: "Multiply the factors: 1.50 × (2/3) = 1.00. The price is back to the original — no net change." },
+            { s: "A number is increased by 40% to give 84. What is 25% of the original number?", o: ["12", "15", "18", "21"], c: 1, e: "The original is 84 ÷ 1.40 = 60. Then 25% of 60 = 15. Note the two-step question." },
+            { s: "If the price of an item falls 20% and then rises 20%, the final price is what percent of the original?", o: ["96%", "98%", "100%", "104%"], c: 0, e: "0.80 × 1.20 = 0.96, so the final price is 96% of the original — a 4% net loss." },
+            { s: "In a class, 60% are girls. If 40% of the girls play sport, what percent of the whole class are girls who play sport?", o: ["20%", "24%", "30%", "40%"], c: 1, e: "Take a percent OF a percent: 0.60 × 0.40 = 0.24 = 24%." },
+            { s: "A salary of $50,000 rises 6% each year. What is it after 2 years (to the nearest dollar)?", o: ["$53,000", "$56,000", "$56,180", "$56,200"], c: 2, e: "Compound the growth: 50,000 × 1.06² = 50,000 × 1.1236 = $56,180." },
+            { s: "An item's price after a 30% markup is $91. What was the cost?", o: ["$63.70", "$65", "$70", "$73"], c: 1, e: "Divide by the multiplier: 91 ÷ 1.30 = $70. Hmm — careful: 91 ÷ 1.30 = 70. The cost was $70." },
+            { s: "If 40% of <i>a</i> equals 60% of <i>b</i>, what is the ratio <i>a</i> : <i>b</i>?", o: ["2 : 3", "3 : 2", "4 : 6", "6 : 4"], c: 1, e: "0.4a = 0.6b, so a/b = 0.6/0.4 = 3/2. The ratio a : b is 3 : 2." }]
+        }
+      },
+    ];
+
+    /* fix the two seeded items whose explanations rambled — keep data clean */
+    CHAPTERS[1].q.E[1] = { s: "What is the sum of the digits of 2⁵?", o: ["4", "5", "6", "8"], c: 1, e: "2⁵ = 32. The digit sum is 3 + 2 = 5." };
+    CHAPTERS[1].q.M[9] = { s: "The three-digit number 2<i>A</i>6 is divisible by 4. How many digits <i>A</i> are possible?", o: ["3", "4", "5", "6"], c: 2, e: "Divisibility by 4 depends only on the last two digits, 'A6'. Checking each: 16, 36, 56, 76 and 96 are divisible by 4 (while 06, 26, 46, 66 and 86 are not). So A can be 1, 3, 5, 7 or 9 — five values." };
+    CHAPTERS[3].q.H[8] = { s: "An item's selling price after a 30% markup is $91. What was the cost?", o: ["$63.70", "$70", "$73", "$78"], c: 1, e: "The selling price is 130% of the cost, so cost = 91 ÷ 1.30 = $70." };
+
+    const LV = { E: "Easy", M: "Medium", H: "Hard" };
+    const AB = ["A", "B", "C", "D"];
+    const $ = id => document.getElementById(id);
+
+    const S = {
+      chap: CHAPTERS[0], mode: "teach", slide: 0,
+      lvl: "E", qmode: "practice", qs: [], i: 0, ans: {}, flag: {}, elim: {}, submitted: false, review: false,
+      elimOn: false, t: 0, tick: null, paused: false,
+      pts: 0, streak: 0
+    };
+
+    /* ================= CHAPTER PICKER ================= */
+    $("selChap").innerHTML = CHAPTERS.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+    $("selChap").onchange = e => { S.chap = CHAPTERS.find(c => c.id === e.target.value); S.slide = 0; renderDeck(); resetQuiz(); $("setupChap").textContent = S.chap.name.replace(/^\d+ · /, ""); if (S.mode === "quiz") showSetup(); };
+
+    /* ================= MODE SWITCH ================= */
+    function setMode(m) {
+      S.mode = m;
+      $("mTeach").classList.toggle("active", m === "teach");
+      $("mQuiz").classList.toggle("active", m === "quiz");
+      $("teachView").style.display = m === "teach" ? "flex" : "none";
+      $("quizView").style.display = m === "quiz" ? "flex" : "none";
+      if (m === "teach") { setTimeout(() => { fitBoard(); fitSlidePen(); }, 30); }
+      else { stopTimer(); showSetup(); }
+    }
+    $("mTeach").onclick = () => setMode("teach");
+    $("mQuiz").onclick = () => setMode("quiz");
+
+    /* ================= TEACH · DECK ================= */
+    function renderDeck() {
+      $("deckName").textContent = S.chap.name.replace(/^\d+ · /, "") + " — Presentation";
+      const useEmbed = !!S.chap.deck;
+      $("slideFrame").style.display = useEmbed ? "block" : "none";
+      $("demoSlide").style.display = useEmbed ? "none" : "flex";
+      $("noEmbed").style.display = "none";
+      if (useEmbed) { $("slideFrame").src = S.chap.deck; $("sCount").textContent = "Google Slides"; $("sPrev").disabled = true; $("sNext").disabled = true; }
+      else { drawSlide(); $("sPrev").disabled = false; $("sNext").disabled = false; }
+      clearSlidePen();
+    }
+    function drawSlide() {
+      const sl = S.chap.slides, d = sl[S.slide];
+      $("demoSlide").innerHTML = `<div class="kicker">${d.k}</div><h2>${d.h}</h2><div class="sub">${d.s}</div><ul>${d.b.map((x, i) => `<li><span class="b">${i + 1}</span><span>${x}</span></li>`).join("")}</ul><div class="note">${d.n}</div>`;
+      $("sCount").textContent = `Slide ${S.slide + 1} of ${sl.length}`;
+      $("sPrev").disabled = S.slide === 0; $("sNext").disabled = S.slide === sl.length - 1;
+    }
+    $("sPrev").onclick = () => { if (S.slide > 0) { S.slide--; drawSlide(); clearSlidePen(); } };
+    $("sNext").onclick = () => { if (S.slide < S.chap.slides.length - 1) { S.slide++; drawSlide(); clearSlidePen(); } };
+    $("sFull").onclick = () => { const el = $("slideBox"); (el.requestFullscreen || el.webkitRequestFullscreen).call(el); };
+    $("sLink").onclick = () => { $("noEmbed").style.display = "flex"; };
+    $("urlCancel").onclick = () => { $("noEmbed").style.display = "none"; };
+    $("urlGo").onclick = () => {
+      let u = $("urlIn").value.trim(); if (!u) return;
+      u = u.replace(/\/(edit|pub|view)(\?[^#]*)?(#.*)?$/, "/embed");
+      S.chap.deck = u; renderDeck(); toast("Deck loaded", "🖥️");
+    };
+
+    /* pen over the slide */
+    const sp = $("slidePen"), spx = sp.getContext("2d");
+    let spDraw = false, spOn = false, spColor = "#FF3B30", spLast = null, spUndo = [];
+    const PEN_COLORS = ["#FF3B30", "#FFD43B", "#1B4FE5", "#12996B", "#0A0F2C"];
+    PEN_COLORS.forEach((c, i) => { const b = document.createElement("button"); b.className = "sw" + (i === 0 ? " on" : ""); b.style.background = c; b.setAttribute("aria-label", "Pen colour"); b.onclick = () => { spColor = c; spOn = true; $("sPen").classList.add("active"); sp.classList.add("armed"); document.querySelectorAll("#sSwatches .sw").forEach(s => s.classList.remove("on")); b.classList.add("on"); }; $("sSwatches").appendChild(b); });
+    function fitSlidePen() { const r = $("slideBox").getBoundingClientRect(); const snap = sp.width ? spx.getImageData(0, 0, sp.width, sp.height) : null; sp.width = r.width; sp.height = r.height; spx.lineCap = "round"; spx.lineJoin = "round"; if (snap) try { spx.putImageData(snap, 0, 0); } catch (e) { } }
+    new ResizeObserver(fitSlidePen).observe($("slideBox"));
+    $("sPen").onclick = () => { spOn = !spOn; $("sPen").classList.toggle("active", spOn); sp.classList.toggle("armed", spOn); sp.style.pointerEvents = spOn ? "auto" : "none"; };
+    sp.style.pointerEvents = "none";
+    const spPos = e => { const r = sp.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+    sp.addEventListener("pointerdown", e => { if (!spOn) return; spDraw = true; spUndo.push(spx.getImageData(0, 0, sp.width, sp.height)); if (spUndo.length > 24) spUndo.shift(); spLast = spPos(e); sp.setPointerCapture(e.pointerId); });
+    sp.addEventListener("pointermove", e => { if (!spDraw) return; const p = spPos(e); spx.strokeStyle = spColor; spx.lineWidth = 3.5; spx.beginPath(); spx.moveTo(spLast.x, spLast.y); spx.lineTo(p.x, p.y); spx.stroke(); spLast = p; });
+    ["pointerup", "pointerleave", "pointercancel"].forEach(ev => sp.addEventListener(ev, () => spDraw = false));
+    $("sUndo").onclick = () => { if (spUndo.length) spx.putImageData(spUndo.pop(), 0, 0); };
+    $("sClear").onclick = () => clearSlidePen();
+    function clearSlidePen() { spx.clearRect(0, 0, sp.width, sp.height); spUndo = []; }
+    $("sPen").classList.remove("active");
+
+    /* ================= TEACH · WHITEBOARD ================= */
+    const bc = $("board"), bx = bc.getContext("2d"), bw = $("boardWrap");
+    let bDraw = false, bTool = "pen", bColor = "#0A0F2C", bSize = 3, bLast = null, bUndo = [];
+    const WB_COLORS = ["#0A0F2C", "#1B4FE5", "#FFD43B", "#DC2B2B", "#12996B", "#7A5BD8"];
+    WB_COLORS.forEach((c, i) => { const b = document.createElement("button"); b.className = "sw" + (i === 0 ? " on" : ""); b.style.background = c; b.setAttribute("aria-label", "Pen colour"); b.onclick = () => { bColor = c; bTool = "pen"; setBTool(); document.querySelectorAll("#wSwatches .sw").forEach(s => s.classList.remove("on")); b.classList.add("on"); }; $("wSwatches").appendChild(b); });
+    function fitBoard() { const snap = bc.width ? bx.getImageData(0, 0, bc.width, bc.height) : null; const r = bw.getBoundingClientRect(); bc.width = r.width; bc.height = r.height; bx.lineCap = "round"; bx.lineJoin = "round"; if (snap) try { bx.putImageData(snap, 0, 0); } catch (e) { } }
+    new ResizeObserver(fitBoard).observe(bw); fitBoard();
+    const bPos = e => { const r = bc.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+    bc.addEventListener("pointerdown", e => { bDraw = true; bUndo.push(bx.getImageData(0, 0, bc.width, bc.height)); if (bUndo.length > 30) bUndo.shift(); bLast = bPos(e); bc.setPointerCapture(e.pointerId); $("wHint").style.opacity = "0"; });
+    bc.addEventListener("pointermove", e => { if (!bDraw) return; const p = bPos(e); bx.globalCompositeOperation = bTool === "eraser" ? "destination-out" : "source-over"; bx.strokeStyle = bColor; bx.lineWidth = bTool === "eraser" ? bSize * 3 : bSize; bx.beginPath(); bx.moveTo(bLast.x, bLast.y); bx.lineTo(p.x, p.y); bx.stroke(); bLast = p; });
+    ["pointerup", "pointerleave", "pointercancel"].forEach(ev => bc.addEventListener(ev, () => bDraw = false));
+    function setBTool() { $("wPen").classList.toggle("active", bTool === "pen"); $("wErase").classList.toggle("active", bTool === "eraser"); }
+    $("wPen").onclick = () => { bTool = "pen"; setBTool(); };
+    $("wErase").onclick = () => { bTool = "eraser"; setBTool(); };
+    $("wGrid").onclick = () => { bw.classList.toggle("grid"); const g = bw.classList.contains("grid"); $("wGrid").textContent = g ? "Squared" : "Plain"; };
+    $("wUndo").onclick = () => { if (bUndo.length) bx.putImageData(bUndo.pop(), 0, 0); };
+    $("wClear").onclick = () => { bUndo.push(bx.getImageData(0, 0, bc.width, bc.height)); bx.clearRect(0, 0, bc.width, bc.height); };
+    $("wSize").oninput = e => bSize = +e.target.value;
+    $("wSave").onclick = () => { const o = document.createElement("canvas"); o.width = bc.width; o.height = bc.height; const c = o.getContext("2d"); c.fillStyle = "#fff"; c.fillRect(0, 0, o.width, o.height); if (bw.classList.contains("grid")) { c.strokeStyle = "#DFE8F7"; c.lineWidth = 1; for (let x = 0; x < o.width; x += 26) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, o.height); c.stroke(); } for (let y = 0; y < o.height; y += 26) { c.beginPath(); c.moveTo(0, y); c.lineTo(o.width, y); c.stroke(); } } c.drawImage(bc, 0, 0); const a = document.createElement("a"); a.download = "satly-whiteboard.png"; a.href = o.toDataURL(); a.click(); };
+
+    /* ================= QUIZ ================= */
+    function showSetup() { $("setupView").style.display = "grid"; $("runView").style.display = "none"; $("resView").style.display = "none"; }
+    function resetQuiz() { S.ans = {}; S.flag = {}; S.elim = {}; S.i = 0; S.submitted = false; S.review = false; stopTimer(); }
+    document.querySelectorAll("#lvlPick .lv").forEach(b => b.onclick = () => { document.querySelectorAll("#lvlPick .lv").forEach(x => x.classList.remove("on")); b.classList.add("on"); S.lvl = b.dataset.l; updStart(); });
+    document.querySelectorAll("#modePick .mo").forEach(b => b.onclick = () => { document.querySelectorAll("#modePick .mo").forEach(x => x.classList.remove("on")); b.classList.add("on"); S.qmode = b.dataset.m; updStart(); });
+    function updStart() { $("startLbl").textContent = `${LV[S.lvl]} · ${S.qmode === "practice" ? "Practice" : "Test"}`; }
+    $("startQuiz").onclick = () => {
+      S.qs = S.chap.q[S.lvl]; resetQuiz();
+      $("setupView").style.display = "none"; $("runView").style.display = "flex"; $("resView").style.display = "none";
+      $("lvlChip").textContent = LV[S.lvl]; $("lvlChip").className = "lvlchip " + S.lvl;
+      $("modeChip").textContent = S.qmode === "practice" ? "Practice" : "Test";
+      $("navTitle").textContent = `${S.chap.name.replace(/^\d+ · /, "")} · ${LV[S.lvl]}`;
+      S.t = 0; startTimer(); renderQ();
+      setInkTool(inkTool && null); clearInk(); setTimeout(fitInk, 30);
+    };
+    $("qBack").onclick = () => { stopTimer(); showSetup(); };
+
+    function renderQ() {
+      const q = S.qs[S.i], a = S.ans[S.i], show = (S.qmode === "practice" && a !== undefined) || S.review;
+      const el = S.elim[S.i] || {};
+      const opts = q.o.map((o, j) => {
+        let cls = "opt"; let mk = "";
+        if (show) { cls += " lock"; if (j === q.c) { cls += " right"; mk = "✓"; } else if (j === a) { cls += " wrong"; mk = "✕"; } }
+        else if (j === a) cls += " sel";
+        if (el[j] && !show) cls += " dead";
+        return `<div class="orow">
+      <button class="${cls}" data-j="${j}"><span class="k">${AB[j]}</span><span class="txt">${o}</span><span class="mk">${mk}</span></button>
+      <button class="abc elim${S.elimOn ? " show" : ""}${el[j] ? " on" : ""}" data-e="${j}" aria-label="Eliminate ${AB[j]}">${AB[j]}</button>
+    </div>`;
+      }).join("");
+      let expl = "";
+      if (show) expl = `<div class="expl"><h4>Explanation</h4><p>${q.e}</p><div class="ansline">Correct answer: ${AB[q.c]}</div></div>`;
+      $("qCard").innerHTML = `
+    <div class="qhead">
+      <div class="qnum">${S.i + 1}</div>
+      <button class="mark${S.flag[S.i] ? " on" : ""}" id="mk"><svg width="14" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg> Mark for Review</button>
+      <div class="r"></div>
+    </div>
+    <div class="stem">${q.s}</div>
+    <div class="opts">${opts}</div>${expl}`;
+      $("mk").onclick = () => { S.flag[S.i] = !S.flag[S.i]; renderQ(); buildNav(); };
+      $("qCard").querySelectorAll(".opt").forEach(b => b.onclick = () => {
+        if (show) return;
+        const j = +b.dataset.j; S.ans[S.i] = j;
+        if (S.qmode === "practice") {
+          if (j === q.c) { S.pts += 10; S.streak++; bump("ptsBox"); bump("strBox"); burst(); toast("Correct — nice work!", "✅"); }
+          else { S.streak = 0; }
+          $("ptsN").textContent = S.pts; $("strN").textContent = S.streak;
+        }
+        renderQ(); buildNav();
+      });
+      $("qCard").querySelectorAll(".abc.elim").forEach(b => b.onclick = () => {
+        const j = +b.dataset.e; S.elim[S.i] = S.elim[S.i] || {}; S.elim[S.i][j] = !S.elim[S.i][j]; renderQ();
+      });
+      $("qPick").innerHTML = `Question ${S.i + 1} of ${S.qs.length} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 15l6-6 6 6"/></svg>`;
+      $("qPrev").disabled = S.i === 0;
+      $("qNext").textContent = (S.i === S.qs.length - 1) ? (S.review ? "Finish review" : (S.qmode === "test" ? "Submit" : "See results")) : "Next";
+      buildNav();
+    }
+    function buildNav() {
+      $("navGrid").innerHTML = S.qs.map((_, j) => {
+        let c = "ng";
+        if (S.review || S.submitted) { if (S.ans[j] === undefined) c += ""; else c += (S.ans[j] === S.qs[j].c) ? " ok" : " bad"; }
+        else if (S.ans[j] !== undefined) c += " ans";
+        if (j === S.i) c += " cur";
+        if (S.flag[j]) c += " flag";
+        return `<button class="${c}" data-j="${j}">${j + 1}</button>`;
+      }).join("");
+      $("navGrid").querySelectorAll(".ng").forEach(b => b.onclick = () => { S.i = +b.dataset.j; $("navPop").classList.remove("show"); clearInk(); renderQ(); });
+    }
+    $("qPick").onclick = () => $("navPop").classList.toggle("show");
+    $("qPrev").onclick = () => { if (S.i > 0) { S.i--; clearInk(); renderQ(); } };
+    $("qNext").onclick = () => {
+      if (S.i < S.qs.length - 1) { S.i++; clearInk(); renderQ(); $("navPop").classList.remove("show"); }
+      else finish();
+    };
+    $("tElim").onclick = () => { S.elimOn = !S.elimOn; $("tElim").classList.toggle("on", S.elimOn); renderQ(); };
+
+    function finish() {
+      stopTimer(); S.submitted = true; S.review = false;
+      const n = S.qs.filter((q, j) => S.ans[j] === q.c).length;
+      $("runView").style.display = "none"; $("resView").style.display = "grid";
+      $("scoreN").textContent = n;
+      $("resKick").textContent = `${S.chap.name.replace(/^\d+ · /, "")} · ${LV[S.lvl]} · ${S.qmode === "practice" ? "Practice" : "Test"}`;
+      const msgs = n === 10 ? "Perfect run. Built to outscore." : n >= 8 ? "Strong work — that's on track for a top score." : n >= 6 ? "Solid. Review the misses and run it again." : n >= 4 ? "Good start. The explanations are where the points are." : "Let's walk the explanations together, then retry.";
+      $("resMsg").textContent = `${msgs}  ·  Time ${fmt(S.t)}`;
+      $("resBars").innerHTML = S.qs.map((q, j) => `<i class="${S.ans[j] === q.c ? "ok" : "bad"}"></i>`).join("");
+      if (n >= 8) { burst(); burst(); toast(n === 10 ? "Perfect score! 🏆" : "Great score!", "🎉"); }
+      S.pts += n * 5; $("ptsN").textContent = S.pts; bump("ptsBox");
+    }
+    $("reviewBtn").onclick = () => { S.review = true; S.i = 0; $("resView").style.display = "none"; $("runView").style.display = "flex"; clearInk(); renderQ(); setTimeout(fitInk, 30); };
+    $("retryBtn").onclick = () => { resetQuiz(); $("startQuiz").click(); };
+    $("backBtn").onclick = () => showSetup();
+
+    /* timer */
+    function fmt(s) { const m = Math.floor(s / 60), x = s % 60; return String(m).padStart(2, "0") + ":" + String(x).padStart(2, "0"); }
+    function startTimer() { stopTimer(); S.paused = false; S.tick = setInterval(() => { if (!S.paused) { S.t++; $("timer").textContent = fmt(S.t); } }, 1000); $("timer").textContent = fmt(S.t); }
+    function stopTimer() { if (S.tick) clearInterval(S.tick); S.tick = null; }
+    $("tPause").onclick = () => { S.paused = !S.paused; $("tPause").textContent = S.paused ? "▶" : "❚❚"; };
+    $("tHide").onclick = () => { const t = $("timer"); t.classList.toggle("hidden"); $("tHide").textContent = t.classList.contains("hidden") ? "Show" : "Hide"; };
+
+    /* ============ ON-SCREEN INK: PEN + HIGHLIGHTER (quiz) ============ */
+    const ink = $("qInk"), ix = ink.getContext("2d"), bbw = $("bbWrap");
+    let inkTool = null, inkDraw = false, inkLast = null, inkStack = [];
+    const INK = {
+      pen: { colors: ["#DC2B2B", "#1B4FE5", "#0A0F2C", "#12996B"], w: 3.2, alpha: 1, cap: "round", comp: "source-over" },
+      high: { colors: ["#FFD43B", "#7BE8C2", "#FFB3C7", "#A9C6F8"], w: 20, alpha: .42, cap: "butt", comp: "multiply" }
+    };
+    let inkColor = { pen: "#DC2B2B", high: "#FFD43B" };
+
+    function fitInk() { const r = bbw.getBoundingClientRect(); const snap = ink.width ? ix.getImageData(0, 0, ink.width, ink.height) : null; ink.width = r.width; ink.height = r.height; if (snap) try { ix.putImageData(snap, 0, 0); } catch (e) { } }
+    new ResizeObserver(fitInk).observe(bbw);
+
+    function buildInkSwatches() {
+      const cfg = INK[inkTool]; if (!cfg) return;
+      $("inkSw").innerHTML = "";
+      cfg.colors.forEach(c => {
+        const b = document.createElement("button");
+        b.className = "sw" + (inkColor[inkTool] === c ? " on" : "");
+        b.style.background = c; b.setAttribute("aria-label", "Ink colour");
+        b.onclick = () => { inkColor[inkTool] = c; buildInkSwatches(); };
+        $("inkSw").appendChild(b);
+      });
+    }
+    function setInkTool(t) {
+      inkTool = (inkTool === t) ? null : t;
+      $("tPen").classList.toggle("on", inkTool === "pen");
+      $("tHigh").classList.toggle("on", inkTool === "high");
+      $("tHigh").classList.toggle("hlchip", false);
+      ink.classList.toggle("armed", !!inkTool);
+      $("inkBar").style.display = inkTool ? "flex" : "none";
+      if (inkTool) { fitInk(); buildInkSwatches(); }
+    }
+    $("tPen").onclick = () => setInkTool("pen");
+    $("tHigh").onclick = () => setInkTool("high");
+
+    const inkPos = e => { const r = ink.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+    ink.addEventListener("pointerdown", e => {
+      if (!inkTool) return;
+      inkDraw = true;
+      inkStack.push(ix.getImageData(0, 0, ink.width, ink.height));
+      if (inkStack.length > 28) inkStack.shift();
+      inkLast = inkPos(e); ink.setPointerCapture(e.pointerId);
+    });
+    ink.addEventListener("pointermove", e => {
+      if (!inkDraw || !inkTool) return;
+      const cfg = INK[inkTool], p = inkPos(e);
+      ix.save();
+      ix.globalAlpha = cfg.alpha;
+      ix.globalCompositeOperation = cfg.comp;
+      ix.strokeStyle = inkColor[inkTool];
+      ix.lineWidth = cfg.w;
+      ix.lineCap = cfg.cap; ix.lineJoin = "round";
+      ix.beginPath(); ix.moveTo(inkLast.x, inkLast.y); ix.lineTo(p.x, p.y); ix.stroke();
+      ix.restore();
+      inkLast = p;
+    });
+    ["pointerup", "pointerleave", "pointercancel"].forEach(ev => ink.addEventListener(ev, () => inkDraw = false));
+    $("inkUndo").onclick = () => { if (inkStack.length) ix.putImageData(inkStack.pop(), 0, 0); };
+    $("inkClear").onclick = () => clearInk();
+    function clearInk() { ix.clearRect(0, 0, ink.width, ink.height); inkStack = []; }
+
+    /* ================= CALCULATOR ================= */
+    $("tCalc").onclick = () => { $("calcModal").classList.add("show"); initCalc(); };
+    $("calcX").onclick = () => $("calcModal").classList.remove("show");
+    $("tRef").onclick = () => $("refModal").classList.add("show");
+    $("refX").onclick = () => $("refModal").classList.remove("show");
+    document.querySelectorAll(".modal").forEach(m => m.onclick = e => { if (e.target === m) m.classList.remove("show"); });
+
+    let calcReady = false;
+    function initCalc() {
+      if (calcReady) return; calcReady = true;
+      const s = document.createElement("script");
+      s.src = "https://www.desmos.com/api/v1.10/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6";
+      s.onload = () => { try { Desmos.GraphingCalculator($("desmos"), { expressions: true, settingsMenu: false, zoomButtons: true }); } catch (e) { fallbackCalc(); } };
+      s.onerror = () => fallbackCalc();
+      document.head.appendChild(s);
+      setTimeout(() => { if (!$("desmos").hasChildNodes()) fallbackCalc(); }, 3500);
+    }
+    function fallbackCalc() {
+      $("desmos").style.display = "none"; $("calcFB").classList.add("show");
+      if ($("ckeys").hasChildNodes()) return;
+      const keys = ["7", "8", "9", "÷", "C", "4", "5", "6", "×", "(", "1", "2", "3", "−", ")", "0", ".", "^", "+", "=", "√", "π", "%", "⌫", "Ans"];
+      let expr = "", ans = 0;
+      keys.forEach(k => {
+        const b = document.createElement("button"); b.className = "ck" + (["÷", "×", "−", "+", "^"].includes(k) ? " op" : "") + (k === "=" ? " eq" : "") + (["√", "π", "%", "⌫", "Ans", "C", "(", ")"].includes(k) ? " fn" : "");
+        b.textContent = k;
+        b.onclick = () => {
+          if (k === "C") { expr = ""; }
+          else if (k === "⌫") { expr = expr.slice(0, -1); }
+          else if (k === "Ans") { expr += String(ans); }
+          else if (k === "=") {
+            try {
+              let e = expr.replace(/÷/g, "/").replace(/×/g, "*").replace(/−/g, "-").replace(/\^/g, "**").replace(/π/g, "Math.PI").replace(/√/g, "Math.sqrt").replace(/%/g, "/100");
+              if (!/^[0-9+\-*/().,\sMathPIsqrt*]+$/.test(e)) throw 0;
+              const v = Function('"use strict";return (' + e + ')')();
+              ans = v; expr = String(Number(v.toFixed(10)));
+            } catch (err) { expr = "Error"; }
+          }
+          else expr += k;
+          $("cd").textContent = expr || "0";
+        };
+        $("ckeys").appendChild(b);
+      });
+    }
+
+    /* ================= FX ================= */
+    const fx = $("fx"), fxc = fx.getContext("2d"); let P = [], raf = null;
+    function fxs() { fx.width = innerWidth; fx.height = innerHeight; } fxs(); addEventListener("resize", fxs);
+    const CC = ["#1B4FE5", "#FFD43B", "#0A0F2C", "#5B85F0", "#FFE477"];
+    function burst() {
+      const x = innerWidth / 2, y = innerHeight * 0.35;
+      for (let i = 0; i < 70; i++) {
+        const a = -Math.PI / 2 + (Math.random() - .5) * Math.PI * 1.1, sp = 6 + Math.random() * 11;
+        P.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, g: .25, s: 5 + Math.random() * 6, r: Math.random() * 6, vr: (Math.random() - .5) * .4, c: CC[i % CC.length], l: 0, m: 70 + Math.random() * 35 });
+      }
+      if (!raf) raf = requestAnimationFrame(tk);
+    }
+    function tk() {
+      fxc.clearRect(0, 0, fx.width, fx.height); P = P.filter(p => p.l < p.m);
+      P.forEach(p => { p.l++; p.vy += p.g; p.x += p.vx; p.y += p.vy; p.r += p.vr; fxc.save(); fxc.globalAlpha = Math.max(0, 1 - p.l / p.m); fxc.translate(p.x, p.y); fxc.rotate(p.r); fxc.fillStyle = p.c; fxc.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * .6); fxc.restore(); });
+      if (P.length) raf = requestAnimationFrame(tk); else { raf = null; fxc.clearRect(0, 0, fx.width, fx.height); }
+    }
+    function toast(m, e) { const w = $("toasts"), d = document.createElement("div"); d.className = "toast"; d.innerHTML = `<span>${e || "✦"}</span> ${m}`; w.appendChild(d); setTimeout(() => { d.classList.add("out"); setTimeout(() => d.remove(), 320); }, 2200); }
+    function bump(id) { const el = $(id); el.classList.remove("pulse"); void el.offsetWidth; el.classList.add("pulse"); }
+
+    /* keyboard */
+    document.addEventListener("keydown", e => {
+      if (["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement.tagName)) return;
+      if (S.mode === "teach") { if (e.key === "ArrowRight") $("sNext").click(); if (e.key === "ArrowLeft") $("sPrev").click(); }
+      else if ($("runView").style.display !== "none") { if (e.key === "ArrowRight") $("qNext").click(); if (e.key === "ArrowLeft") $("qPrev").click(); }
+    });
+
+    /* boot */
+    $("setupChap").textContent = S.chap.name.replace(/^\d+ · /, "");
+    renderDeck(); updStart();
+  </script>
+</body>
+
+</html>
