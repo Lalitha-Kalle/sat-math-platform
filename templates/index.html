@@ -2248,8 +2248,10 @@
       $("slideFrame").style.display = useEmbed ? "block" : "none";
       $("demoSlide").style.display = useEmbed ? "none" : "flex";
       $("noEmbed").style.display = "none";
-      if (useEmbed) { $("slideFrame").src = S.chap.deck; $("sCount").textContent = "Google Slides"; $("sPrev").disabled = true; $("sNext").disabled = true; }
-      else { drawSlide(); $("sPrev").disabled = false; $("sNext").disabled = false; }
+      $("sPrev").style.display = useEmbed ? "none" : "";
+      $("sNext").style.display = useEmbed ? "none" : "";
+      if (useEmbed) { $("slideFrame").src = S.chap.deck; $("sCount").textContent = "Use the arrows inside the deck to navigate"; }
+      else { drawSlide(); }
       clearSlidePen();
     }
     function drawSlide() {
