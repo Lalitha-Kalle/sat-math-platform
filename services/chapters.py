@@ -41,29 +41,15 @@ def get_chapters_full(conn):
             for s in slide_rows
         ]
 
-        q = {"E": [], "M": [], "H": []}
-        question_rows = conn.execute(
-            "SELECT level, stem, options, correct_index, explanation FROM questions "
-            "WHERE chapter_id = ? ORDER BY level, position",
-            (ch["id"],),
-        ).fetchall()
-        for qr in question_rows:
-            q[qr["level"]].append(
-                {
-                    "s": qr["stem"],
-                    "o": json.loads(qr["options"]),
-                    "c": qr["correct_index"],
-                    "e": qr["explanation"],
-                }
-            )
-
         result.append(
             {
                 "id": ch["code"],
                 "name": ch["name"],
                 "deck": ch["ppt_embed_url"] or "",
                 "slides": slides,
-                "q": q,
+                # Quiz questions come from data/sat_qa_bank.sqlite3 only (see
+                # services.qa_bank.merge_qa_chapters), not from this database.
+                "q": {"E": [], "M": [], "H": []},
             }
         )
     return result

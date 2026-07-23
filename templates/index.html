@@ -1415,6 +1415,15 @@
       background: #F7FAFF
     }
 
+    .lv:disabled {
+      opacity: .4;
+      cursor: not-allowed
+    }
+
+    .lv:disabled:hover {
+      border-color: var(--line)
+    }
+
     .lv .nm {
       font-size: 15px;
       font-weight: 700;
@@ -1976,7 +1985,7 @@
           <div class="setupcard">
             <div class="kick">Quiz Mode</div>
             <h2 id="setupChap">Choose your level</h2>
-            <div class="s">10 questions per level, in the Bluebook test interface.</div>
+            <div class="s" id="setupNote">Pick a difficulty, in the Bluebook test interface.</div>
             <div class="grp">
               <div class="lb">Difficulty</div>
               <div class="lvls" id="lvlPick">
@@ -2310,12 +2319,30 @@
     $("wSave").onclick = () => { const o = document.createElement("canvas"); o.width = bc.width; o.height = bc.height; const c = o.getContext("2d"); c.fillStyle = "#fff"; c.fillRect(0, 0, o.width, o.height); if (bw.classList.contains("grid")) { c.strokeStyle = "#DFE8F7"; c.lineWidth = 1; for (let x = 0; x < o.width; x += 26) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, o.height); c.stroke(); } for (let y = 0; y < o.height; y += 26) { c.beginPath(); c.moveTo(0, y); c.lineTo(o.width, y); c.stroke(); } } c.drawImage(bc, 0, 0); const a = document.createElement("a"); a.download = "satly-whiteboard.png"; a.href = o.toDataURL(); a.click(); };
 
     /* ================= QUIZ ================= */
-    function showSetup() { $("setupView").style.display = "grid"; $("runView").style.display = "none"; $("resView").style.display = "none"; }
+    function showSetup() { $("setupView").style.display = "grid"; $("runView").style.display = "none"; $("resView").style.display = "none"; refreshLvlAvailability(); }
     function resetQuiz() { S.ans = {}; S.flag = {}; S.elim = {}; S.i = 0; S.submitted = false; S.review = false; stopTimer(); }
-    document.querySelectorAll("#lvlPick .lv").forEach(b => b.onclick = () => { document.querySelectorAll("#lvlPick .lv").forEach(x => x.classList.remove("on")); b.classList.add("on"); S.lvl = b.dataset.l; updStart(); });
+    document.querySelectorAll("#lvlPick .lv").forEach(b => b.onclick = () => { if (b.disabled) return; document.querySelectorAll("#lvlPick .lv").forEach(x => x.classList.remove("on")); b.classList.add("on"); S.lvl = b.dataset.l; updStart(); });
     document.querySelectorAll("#modePick .mo").forEach(b => b.onclick = () => { document.querySelectorAll("#modePick .mo").forEach(x => x.classList.remove("on")); b.classList.add("on"); S.qmode = b.dataset.m; updStart(); });
-    function updStart() { $("startLbl").textContent = `${LV[S.lvl]} · ${S.qmode === "practice" ? "Practice" : "Test"}`; }
+    function refreshLvlAvailability() {
+      const counts = { E: S.chap.q.E.length, M: S.chap.q.M.length, H: S.chap.q.H.length };
+      document.querySelectorAll("#lvlPick .lv").forEach(b => { b.disabled = counts[b.dataset.l] === 0; });
+      if (counts[S.lvl] === 0) {
+        const fallback = ["E", "M", "H"].find(l => counts[l] > 0);
+        if (fallback) { S.lvl = fallback; document.querySelectorAll("#lvlPick .lv").forEach(x => x.classList.toggle("on", x.dataset.l === fallback)); }
+      }
+      const total = counts.E + counts.M + counts.H;
+      $("setupNote").textContent = total > 0
+        ? `Easy ${counts.E} · Medium ${counts.M} · Hard ${counts.H} questions, in the Bluebook test interface.`
+        : "No questions loaded for this chapter yet.";
+      updStart();
+    }
+    function updStart() {
+      const n = S.chap.q[S.lvl].length;
+      $("startLbl").textContent = n > 0 ? `${LV[S.lvl]} · ${S.qmode === "practice" ? "Practice" : "Test"}` : "No questions yet";
+      $("startQuiz").disabled = n === 0;
+    }
     $("startQuiz").onclick = () => {
+      if (!S.chap.q[S.lvl].length) return;
       S.qs = S.chap.q[S.lvl]; resetQuiz();
       $("setupView").style.display = "none"; $("runView").style.display = "flex"; $("resView").style.display = "none";
       $("lvlChip").textContent = LV[S.lvl]; $("lvlChip").className = "lvlchip " + S.lvl;
