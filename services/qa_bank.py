@@ -8,16 +8,32 @@ import re
 DIFFICULTY_TO_LEVEL = {"easy": "E", "medium": "M", "hard": "H"}
 OPTION_LETTER_TO_INDEX = {"A": 0, "B": 1, "C": 2, "D": 3}
 
+# Topic labels from sat-ques-and-ans.xlsx's "Chapter" column that don't have
+# their own chapter in the app but belong under an existing one.
+CHAPTER_ALIASES = {
+    "word problems": "03 · Ratio, Proportion & Rates",
+    "ratios": "03 · Ratio, Proportion & Rates",
+}
+
 
 def _slugify(name):
     return "qa-" + re.sub(r"[^a-z0-9]+", "-", name.strip().lower()).strip("-")
 
 
+def _normalize_name(name):
+    return re.sub(r"[^a-z0-9]+", " ", name.strip().lower()).strip()
+
+
 def get_qa_chapters(conn):
     chapters = conn.execute("SELECT id, name FROM chapters ORDER BY name").fetchall()
-    result = []
+    buckets = {}
+    order = []
     for ch in chapters:
-        q = {"E": [], "M": [], "H": []}
+        canonical = CHAPTER_ALIASES.get(_normalize_name(ch["name"]), ch["name"])
+        if canonical not in buckets:
+            buckets[canonical] = {"E": [], "M": [], "H": []}
+            order.append(canonical)
+
         rows = conn.execute(
             "SELECT difficulty, question, option_a, option_b, option_c, option_d, "
             "       correct_option, explanation "
@@ -28,7 +44,7 @@ def get_qa_chapters(conn):
             level = DIFFICULTY_TO_LEVEL.get((r["difficulty"] or "").strip().lower())
             if not level:
                 continue
-            q[level].append(
+            buckets[canonical][level].append(
                 {
                     "s": r["question"],
                     "o": [r["option_a"], r["option_b"], r["option_c"], r["option_d"]],
@@ -37,28 +53,24 @@ def get_qa_chapters(conn):
                 }
             )
 
-        result.append(
-            {
-                "id": _slugify(ch["name"]),
-                "name": ch["name"],
-                "deck": "",
-                "slides": [
-                    {
-                        "k": "Question bank",
-                        "h": ch["name"],
-                        "s": "Loaded from sat-ques-and-ans.xlsx",
-                        "b": [],
-                        "n": "No slide deck for this chapter yet — use Quiz mode to practice.",
-                    }
-                ],
-                "q": q,
-            }
-        )
-    return result
-
-
-def _normalize_name(name):
-    return re.sub(r"[^a-z0-9]+", " ", name.strip().lower()).strip()
+    return [
+        {
+            "id": _slugify(name),
+            "name": name,
+            "deck": "",
+            "slides": [
+                {
+                    "k": "Question bank",
+                    "h": name,
+                    "s": "Loaded from sat-ques-and-ans.xlsx",
+                    "b": [],
+                    "n": "No slide deck for this chapter yet — use Quiz mode to practice.",
+                }
+            ],
+            "q": buckets[name],
+        }
+        for name in order
+    ]
 
 
 def merge_qa_chapters(chapters, qa_chapters):

@@ -16,6 +16,10 @@ from pathlib import Path
 import openpyxl
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from services.qa_bank import CHAPTER_ALIASES, _normalize_name  # noqa: E402
+
 XLSX_PATH = ROOT / "sat-ques-and-ans.xlsx"
 DB_PATH = ROOT / "data" / "sat_qa_bank.sqlite3"
 
@@ -95,6 +99,8 @@ def main():
         loaded = 0
         for row in rows:
             chapter_name = clean(row[COL_CHAPTER])
+            if chapter_name:
+                chapter_name = CHAPTER_ALIASES.get(_normalize_name(chapter_name), chapter_name)
             difficulty = clean(row[COL_DIFFICULTY])
             correct_option = clean(row[COL_CORRECT])
             question = clean(row[COL_QUESTION])
